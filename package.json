@@ -1,0 +1,254 @@
+{
+  "name": "mqtt-code",
+  "displayName": "MQTT Code",
+  "description": "A feature-rich MQTT explorer, topic visualiser, and message publisher for VS Code.",
+  "version": "0.7.0",
+  "publisher": "whitecloudcode",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WhiteCloudCode/mqtt-code.git"
+  },
+  "icon": "resources/icons/mqtt-code-logo-transparent.png",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "mqtt",
+    "iot",
+    "broker",
+    "explorer",
+    "telemetry",
+    "publisher",
+    "subscriber"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "mqtt-code-explorer",
+          "title": "MQTT Code",
+          "icon": "resources/icons/mqtt-code-logo-transparent.png"
+        }
+      ]
+    },
+    "views": {
+      "mqtt-code-explorer": [
+        {
+          "id": "mqtt-code-brokers",
+          "name": "Brokers",
+          "contextualTitle": "MQTT Brokers"
+        },
+        {
+          "id": "mqtt-code-subscriptions",
+          "name": "Active Subscriptions",
+          "contextualTitle": "MQTT Subscriptions"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "mqtt-code.add-broker",
+        "title": "Add Broker Connection",
+        "category": "MQTT Code",
+        "icon": "$(plus)"
+      },
+      {
+        "command": "mqtt-code.edit-broker",
+        "title": "Edit Broker Connection",
+        "category": "MQTT Code",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "mqtt-code.delete-broker",
+        "title": "Delete Broker Connection",
+        "category": "MQTT Code",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "mqtt-code.connect-broker",
+        "title": "Connect to Broker",
+        "category": "MQTT Code",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "mqtt-code.disconnect-broker",
+        "title": "Disconnect from Broker",
+        "category": "MQTT Code",
+        "icon": "$(debug-disconnect)"
+      },
+      {
+        "command": "mqtt-code.open-explorer",
+        "title": "Open Live Topic Explorer",
+        "category": "MQTT Code",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "mqtt-code.add-subscription",
+        "title": "Add Topic Subscription",
+        "category": "MQTT Code",
+        "icon": "$(add)"
+      },
+      {
+        "command": "mqtt-code.edit-subscription",
+        "title": "Edit Subscription",
+        "category": "MQTT Code",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "mqtt-code.remove-subscription",
+        "title": "Remove Subscription",
+        "category": "MQTT Code",
+        "icon": "$(close)"
+      },
+      {
+        "command": "mqtt-code.quick-publish",
+        "title": "Quick Publish Message",
+        "category": "MQTT Code",
+        "icon": "$(send)"
+      },
+      {
+        "command": "mqtt-code.refresh-brokers",
+        "title": "Refresh Brokers List",
+        "category": "MQTT Code",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "mqtt-code.add-broker",
+          "when": "view == mqtt-code-brokers",
+          "group": "navigation"
+        },
+        {
+          "command": "mqtt-code.refresh-brokers",
+          "when": "view == mqtt-code-brokers",
+          "group": "navigation"
+        },
+        {
+          "command": "mqtt-code.add-subscription",
+          "when": "view == mqtt-code-subscriptions",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "mqtt-code.connect-broker",
+          "when": "view == mqtt-code-brokers && viewItem == broker-disconnected",
+          "group": "inline"
+        },
+        {
+          "command": "mqtt-code.disconnect-broker",
+          "when": "view == mqtt-code-brokers && viewItem == broker-connected",
+          "group": "inline"
+        },
+        {
+          "command": "mqtt-code.open-explorer",
+          "when": "view == mqtt-code-brokers && viewItem == broker-connected",
+          "group": "inline"
+        },
+        {
+          "command": "mqtt-code.edit-broker",
+          "when": "view == mqtt-code-brokers",
+          "group": "broker_manage@1"
+        },
+        {
+          "command": "mqtt-code.delete-broker",
+          "when": "view == mqtt-code-brokers",
+          "group": "broker_manage@2"
+        },
+        {
+          "command": "mqtt-code.edit-subscription",
+          "when": "view == mqtt-code-subscriptions",
+          "group": "inline"
+        },
+        {
+          "command": "mqtt-code.remove-subscription",
+          "when": "view == mqtt-code-subscriptions",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "MQTT Code",
+      "properties": {
+        "mqttCode.maxMessagesPerTopic": {
+          "type": "integer",
+          "default": 100,
+          "description": "Maximum number of historical messages retained per topic in memory."
+        },
+        "mqttCode.autoOpenExplorerOnConnect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically open the interactive Live Topic Explorer panel when connecting to a broker."
+        },
+        "mqttCode.defaultQoS": {
+          "type": "integer",
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "default": 0,
+          "description": "Default Quality of Service (QoS) level for new subscriptions and publications."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "node esbuild.js --production",
+    "test": "node ./dist/test/run-test.js",
+    "test:ui": "mocha --ui tdd --require dist/test/suite/webview-setup.js dist/test/suite/webview-topic-tree.test.js",
+    "test:unit": "mocha dist/test/suite/models.test.js dist/test/suite/topic-tree-manager.test.js",
+    "lint": "eslint src --ext ts",
+    "lint:fix": "eslint src --ext ts --fix",
+    "format": "prettier --write src",
+    "format:check": "prettier --check src",
+    "release:patch": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as patch && npx --yes @vscode/vsce package --allow-missing-repository",
+    "release:minor": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as minor && npx --yes @vscode/vsce package --allow-missing-repository",
+    "release:major": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as major && npx --yes @vscode/vsce package --allow-missing-repository",
+    "prepare": "git config core.hooksPath .githooks"
+  },
+  "dependencies": {
+    "echarts": "^6.1.0",
+    "mqtt": "^5.10.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/jsdom": "^30.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
+    "@vscode/test-electron": "^3.1.0",
+    "commit-and-tag-version": "^13.2.1",
+    "esbuild": "^0.24.0",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "jsdom": "^29.1.1",
+    "jsdom-global": "^3.0.2",
+    "lint-staged": "^16.4.0",
+    "mocha": "^10.8.2",
+    "prettier": "^3.9.6",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.70.0"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,js,json,html,css}": [
+      "prettier --write"
+    ],
+    "src/**/*.ts": [
+      "eslint --fix"
+    ]
+  }
+}

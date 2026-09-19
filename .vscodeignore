@@ -1,0 +1,13 @@
+.vscode/**
+.vscode-test/**
+out/**
+src/**
+test/**
+node_modules/**
+.gitignore
+.npmrc
+*.vsix
+esbuild.js
+tsconfig.json
+AGENTS.md
+

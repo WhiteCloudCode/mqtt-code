@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}'; img-src {{cspSource}} https: data:;"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{styleUri}}" />
+    <title>MQTT Broker Configuration</title>
+  </head>
+  <body>
+    <div class="container">
+      <header class="form-header">
+        <h1 id="form-heading" class="title">Add MQTT Broker</h1>
+        <p class="subtitle">
+          Configure connection parameters, authentication, and security settings for your MQTT
+          broker.
+        </p>
+      </header>
+
+      <form id="broker-form" class="broker-form" novalidate>
+        <!-- Section 1: Connection Details -->
+        <fieldset class="form-section">
+          <legend class="section-legend">Connection Details</legend>
+
+          <div class="form-group">
+            <label for="profile-name">Profile Name <span class="required">*</span></label>
+            <input type="text" id="profile-name" name="profileName" required />
+            <span class="field-hint">A friendly identifier displayed in your Activity Bar.</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="protocol">Protocol <span class="required">*</span></label>
+              <select id="protocol" name="protocol">
+                <option value="mqtt://">mqtt:// (Standard TCP)</option>
+                <option value="mqtts://">mqtts:// (TLS / SSL Encrypted)</option>
+                <option value="ws://">ws:// (WebSocket)</option>
+                <option value="wss://">wss:// (Secure WebSocket)</option>
+              </select>
+            </div>
+
+            <div class="form-group flex-2">
+              <label for="host">Host / IP Address <span class="required">*</span></label>
+              <input type="text" id="host" name="host" required />
+            </div>
+
+            <div class="form-group flex-1">
+              <label for="port">Port <span class="required">*</span></label>
+              <input
+                type="number"
+                id="port"
+                name="port"
+                min="1"
+                max="65535"
+                value="1883"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="client-id">Client ID</label>
+            <div class="input-with-button">
+              <input
+                type="text"
+                id="client-id"
+                name="clientId"
+                placeholder="Leave empty for auto-generated Client ID"
+              />
+              <button
+                type="button"
+                id="btn-generate-client-id"
+                class="btn-secondary"
+                title="Generate random client ID"
+              >
+                Generate
+              </button>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Section 2: Authentication -->
+        <fieldset class="form-section">
+          <legend class="section-legend">Authentication</legend>
+          <p class="section-description">
+            Passwords are securely stored in your operating system keychain using VS Code
+            SecretStorage.
+          </p>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="username">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Optional username"
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="form-group flex-1">
+              <label for="password">Password</label>
+              <div class="input-with-button">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Optional password"
+                  autocomplete="new-password"
+                />
+                <button
+                  type="button"
+                  id="btn-toggle-password"
+                  class="btn-secondary"
+                  title="Toggle password visibility"
+                >
+                  Show
+                </button>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Section 3: Protocol & Session Settings -->
+        <fieldset class="form-section">
+          <legend class="section-legend">MQTT &amp; Session Options</legend>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="mqtt-version">MQTT Protocol Version</label>
+              <select id="mqtt-version" name="mqttVersion">
+                <option value="3.1.1">MQTT v3.1.1 (Standard)</option>
+                <option value="5.0">MQTT v5.0 (User properties, reason codes)</option>
+              </select>
+            </div>
+
+            <div class="form-group flex-1">
+              <label for="keepalive">Keepalive Interval (seconds)</label>
+              <input type="number" id="keepalive" name="keepalive" min="0" max="3600" value="60" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="subscriptions">Default Topic Subscriptions</label>
+            <input type="text" id="subscriptions" name="subscriptions" value="#" />
+            <span class="field-hint">Topics automatically subscribed to upon connection.</span>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label for="clean-session" class="checkbox-label">
+              <input type="checkbox" id="clean-session" name="cleanSession" checked />
+              <span>Clean Session / Clean Start</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Section 4: TLS / SSL & Certificates -->
+        <fieldset class="form-section">
+          <legend class="section-legend">TLS / SSL Certificates</legend>
+
+          <div class="form-group checkbox-group">
+            <label for="reject-unauthorized" class="checkbox-label">
+              <input type="checkbox" id="reject-unauthorized" name="rejectUnauthorized" checked />
+              <span>Validate Server Certificate (Reject Unauthorised)</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="ca-cert-path">CA Certificate Path</label>
+            <div class="input-with-button">
+              <input type="text" id="ca-cert-path" name="caCertPath" />
+              <button
+                type="button"
+                class="btn-secondary btn-browse-file"
+                data-target="ca-cert-path"
+              >
+                Browse...
+              </button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="client-cert-path">Client Certificate Path</label>
+              <div class="input-with-button">
+                <input type="text" id="client-cert-path" name="clientCertPath" />
+                <button
+                  type="button"
+                  class="btn-secondary btn-browse-file"
+                  data-target="client-cert-path"
+                >
+                  Browse...
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group flex-1">
+              <label for="client-key-path">Client Key Path</label>
+              <div class="input-with-button">
+                <input type="text" id="client-key-path" name="clientKeyPath" />
+                <button
+                  type="button"
+                  class="btn-secondary btn-browse-file"
+                  data-target="client-key-path"
+                >
+                  Browse...
+                </button>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Feedback / Test Banner -->
+        <div id="test-result-banner" class="result-banner" style="display: none"></div>
+
+        <!-- Action Buttons Footer -->
+        <footer class="form-footer">
+          <div class="footer-left">
+            <button type="button" id="btn-test-connection" class="btn-secondary">
+              Test Connection
+            </button>
+          </div>
+          <div class="footer-right">
+            <button type="button" id="btn-cancel" class="btn-secondary">Cancel</button>
+            <button type="submit" id="btn-save" class="btn-primary">Save Configuration</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+
+    <script nonce="{{nonce}}" src="{{scriptUri}}"></script>
+  </body>
+</html>

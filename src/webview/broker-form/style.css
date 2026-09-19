@@ -1,0 +1,229 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(
+    --vscode-font-family,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif
+  );
+  font-size: var(--vscode-font-size, 13px);
+  color: var(--vscode-foreground, #cccccc);
+  background-color: var(--vscode-editor-background, #1e1e1e);
+  line-height: 1.5;
+  padding: 24px;
+}
+
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.form-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--vscode-panel-border, #333333);
+  padding-bottom: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--vscode-foreground, #ffffff);
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: var(--vscode-descriptionForeground, #a0a0a0);
+  font-size: 13px;
+}
+
+.broker-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-section {
+  border: 1px solid var(--vscode-panel-border, #333333);
+  border-radius: 6px;
+  padding: 16px 20px 20px 20px;
+  background-color: var(--vscode-sideBar-background, #252526);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.section-legend {
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0 8px;
+  color: var(--vscode-foreground, #ffffff);
+}
+
+.section-description {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground, #a0a0a0);
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.flex-1 {
+  flex: 1;
+}
+.flex-2 {
+  flex: 2;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vscode-foreground, #cccccc);
+}
+
+.required {
+  color: #f85149;
+  margin-left: 2px;
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground, #a0a0a0);
+}
+
+input[type='text'],
+input[type='password'],
+input[type='number'],
+select {
+  padding: 7px 10px;
+  background-color: var(--vscode-input-background, #3c3c3c);
+  color: var(--vscode-input-foreground, #ffffff);
+  border: 1px solid var(--vscode-input-border, #444444);
+  border-radius: 4px;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  width: 100%;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--vscode-focusBorder, #007acc);
+}
+
+.input-with-button {
+  display: flex;
+  gap: 8px;
+}
+
+.input-with-button input {
+  flex: 1;
+}
+
+.checkbox-group {
+  margin-top: 4px;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--vscode-foreground, #cccccc);
+}
+
+.checkbox-label input[type='checkbox'] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+/* Result Banner */
+.result-banner {
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.result-banner.success {
+  background-color: rgba(35, 134, 54, 0.2);
+  border: 1px solid #238636;
+  color: #3fb950;
+}
+
+.result-banner.error {
+  background-color: rgba(218, 54, 51, 0.2);
+  border: 1px solid #da3633;
+  color: #f85149;
+}
+
+.result-banner.testing {
+  background-color: rgba(210, 153, 34, 0.2);
+  border: 1px solid #d29922;
+  color: #d29922;
+}
+
+/* Footer */
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--vscode-panel-border, #333333);
+  margin-top: 8px;
+}
+
+.footer-right {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-primary {
+  background-color: var(--vscode-button-background, #0e639c);
+  color: var(--vscode-button-foreground, #ffffff);
+  border: none;
+  padding: 8px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: var(--vscode-button-hoverBackground, #1177bb);
+}
+
+.btn-secondary {
+  background-color: var(--vscode-button-secondaryBackground, #3a3d41);
+  color: var(--vscode-button-secondaryForeground, #ffffff);
+  border: none;
+  padding: 7px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-secondary:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground, #45494e);
+}
