@@ -3,7 +3,7 @@
 [![Visual Studio Marketplace](https://img.shields.io/badge/VS%20Code-Extension-blue.svg)](https://marketplace.visualstudio.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-
+![MQTT Code Screengrab](https://raw.githubusercontent.com/WhiteCloudCode/mqtt-code/main/mqtt-code-screengrab.gif)
 
 **MQTT Code** is a high-performance, developer-friendly MQTT explorer, topic visualiser, and message publisher directly integrated into Visual Studio Code. It provides a native Activity Bar sidebar for broker profile and subscription management, alongside an interactive editor Webview dashboard for real-time topic tree exploration, payload inspection, and message publishing.
 
