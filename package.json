@@ -2,7 +2,7 @@
   "name": "mqtt-code",
   "displayName": "MQTT Code",
   "description": "A feature-rich MQTT explorer, topic visualiser, and message publisher for VS Code.",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "publisher": "whitecloudcode",
   "repository": {
     "type": "git",
