@@ -10,7 +10,8 @@ export type WebviewToExtensionMessage =
   | { type: 'unsubscribe'; topic: string }
   | { type: 'clearTree' }
   | { type: 'savePublisherState'; data: boolean }
-  | { type: 'saveLayoutState'; data: { topicPaneWidth?: string } };
+  | { type: 'saveLayoutState'; data: { topicPaneWidth?: string } }
+  | { type: 'executeCommand'; command: string; args?: unknown[] };
 
 // Messages sent from Extension to Webview
 export type ExtensionToWebviewMessage =

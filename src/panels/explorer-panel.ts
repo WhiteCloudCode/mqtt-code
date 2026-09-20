@@ -165,6 +165,13 @@ export class ExplorerPanel {
       case 'savePublisherState':
         await this.storageService.setPublisherOpenState(Boolean(message.data));
         break;
+      case 'executeCommand':
+        if (message.args) {
+          vscode.commands.executeCommand(message.command, ...message.args);
+        } else {
+          vscode.commands.executeCommand(message.command);
+        }
+        break;
       case 'saveLayoutState': {
         const payload = message.data as { topicPaneWidth?: string } | undefined;
         if (payload?.topicPaneWidth) {
