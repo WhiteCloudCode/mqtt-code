@@ -70,8 +70,7 @@ export function activateTab(tabId: string) {
   content?.classList.add('active');
 }
 
-export function initialiseEventListeners() {
-  // Tabs
+function initTabs() {
   document.querySelectorAll('.tab-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const target = e.currentTarget as HTMLElement;
@@ -82,7 +81,6 @@ export function initialiseEventListeners() {
     });
   });
 
-  // Format buttons
   document.querySelectorAll('.format-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const target = e.currentTarget as HTMLElement;
@@ -113,29 +111,6 @@ export function initialiseEventListeners() {
     });
   });
 
-  // Handle clicks on individual topic segment badges
-  document.addEventListener('mousedown', (e) => {
-    const target = e.target as HTMLElement;
-    if (target.classList.contains('topic-segment-badge')) {
-      const text = target.textContent || '';
-
-      // Select the text programmatically to make it obvious
-      const selection = window.getSelection();
-      const range = document.createRange();
-      range.selectNodeContents(target);
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-
-      // Copy to clipboard
-      navigator.clipboard.writeText(text);
-
-      // Visual feedback
-      target.classList.remove('flash-update');
-      void target.offsetWidth; // Trigger reflow
-      target.classList.add('flash-update');
-    }
-  });
-
   if (btnCloseHistoryDetail && historyDetailView && historyMasterView) {
     btnCloseHistoryDetail.addEventListener('click', () => {
       historyDetailView.style.display = 'none';
@@ -143,7 +118,9 @@ export function initialiseEventListeners() {
       updateSelectedTopicDetails();
     });
   }
+}
 
+function initToolbar() {
   btnFirehose.addEventListener('click', () => {
     state.intermediateViewMode = 'firehose';
     const node = findNode(state.rootTree, state.selectedTopic || '');
@@ -163,6 +140,26 @@ export function initialiseEventListeners() {
   btnViewTree.addEventListener('click', () => switchViewMode('tree'));
   btnViewList.addEventListener('click', () => switchViewMode('list'));
 
+  btnExpandAll.addEventListener('click', () => {
+    setAllNodesToggledState(state.rootTree, false);
+    renderTopics();
+  });
+
+  btnCollapseAll.addEventListener('click', () => {
+    setAllNodesToggledState(state.rootTree, true);
+    renderTopics();
+  });
+
+  btnClearTree.addEventListener('click', () => {
+    vscode.postMessage({ type: 'clearTree' });
+  });
+
+  btnRefreshState.addEventListener('click', () => {
+    vscode.postMessage({ type: 'requestState' });
+  });
+}
+
+function initResizer() {
   let isResizing = false;
   paneResizer.addEventListener('mousedown', (e) => {
     isResizing = true;
@@ -207,16 +204,9 @@ export function initialiseEventListeners() {
       });
     });
   }
+}
 
-  btnExpandAll.addEventListener('click', () => {
-    setAllNodesToggledState(state.rootTree, false);
-    renderTopics();
-  });
-  btnCollapseAll.addEventListener('click', () => {
-    setAllNodesToggledState(state.rootTree, true);
-    renderTopics();
-  });
-
+function initSearch() {
   topicSearchInput.addEventListener('input', () => {
     state.filterQuery = topicSearchInput.value.trim().toLowerCase();
     renderTopics();
@@ -227,13 +217,24 @@ export function initialiseEventListeners() {
     state.filterQuery = '';
     renderTopics();
   });
+}
 
-  btnClearTree.addEventListener('click', () => {
-    vscode.postMessage({ type: 'clearTree' });
-  });
+function initCopyActions() {
+  document.addEventListener('mousedown', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('topic-segment-badge')) {
+      const text = target.textContent || '';
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(target);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      navigator.clipboard.writeText(text);
 
-  btnRefreshState.addEventListener('click', () => {
-    vscode.postMessage({ type: 'requestState' });
+      target.classList.remove('flash-update');
+      void target.offsetWidth; // Trigger reflow
+      target.classList.add('flash-update');
+    }
   });
 
   btnCopyTopic.addEventListener('click', () => {
@@ -260,7 +261,9 @@ export function initialiseEventListeners() {
       showCopyConfirmation(btnCopyPayload, '<span class="codicon codicon-copy"></span> Payload');
     }
   });
+}
 
+function initPublishForm() {
   btnFormatJson.addEventListener('click', () => {
     try {
       const parsed = JSON.parse(pubPayload.value);
@@ -311,4 +314,13 @@ export function initialiseEventListeners() {
       },
     });
   });
+}
+
+export function initialiseEventListeners() {
+  initTabs();
+  initToolbar();
+  initResizer();
+  initSearch();
+  initCopyActions();
+  initPublishForm();
 }

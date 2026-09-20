@@ -73,7 +73,7 @@ export function hideHistoryDetail() {
   if (detailView && masterView) {
     detailView.style.display = 'none';
     masterView.style.display = 'block';
-    
+
     const tabBtnHistory = document.getElementById('tab-btn-history');
     if (tabBtnHistory) {
       tabBtnHistory.textContent = 'Message History';

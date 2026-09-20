@@ -93,7 +93,7 @@ export function updateSelectedTopicDetails() {
 
     const historyDetailView = document.getElementById('history-detail-view');
     const isHistoryDetailOpen = historyDetailView && historyDetailView.style.display !== 'none';
-    
+
     if (isHistoryDetailOpen) {
       tabBtnHistory.style.display = 'inline-block';
     } else {

@@ -139,12 +139,7 @@ export class ExplorerPanel {
     this.connectionManager.on('subscriptionChange', this._onSubscriptionChange);
   }
 
-  private async handleWebviewMessage(message: {
-    type: string;
-    data?: unknown;
-    topic?: string;
-    qos?: 0 | 1 | 2;
-  }): Promise<void> {
+  private async handleWebviewMessage(message: WebviewToExtensionMessage): Promise<void> {
     switch (message.type) {
       case 'requestState':
         this.sendFullState();

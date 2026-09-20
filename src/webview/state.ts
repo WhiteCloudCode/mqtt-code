@@ -2,8 +2,10 @@ import { MqttMessage } from '../models/mqtt-message';
 import { SerialisedTopicNode } from '../models/topic-node';
 import * as echarts from 'echarts';
 
+import { WebviewToExtensionMessage } from '../types/webview-messages';
+
 interface VsCodeApi {
-  postMessage(message: unknown): void;
+  postMessage(message: WebviewToExtensionMessage): void;
   getState(): unknown;
   setState(state: unknown): void;
 }
