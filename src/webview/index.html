@@ -4,11 +4,20 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}'; img-src {{cspSource}} https: data:;"
+      content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}' {{cspSource}} 'unsafe-eval'; worker-src blob: {{cspSource}}; img-src {{cspSource}} https: data:;"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{{styleUri}}" />
     <title>MQTT Code Explorer</title>
+    <script nonce="{{nonce}}">
+      var require = { paths: { 'vs': '{{monacoBaseUri}}' } };
+    </script>
+    <script nonce="{{nonce}}" src="{{monacoLoaderUri}}"></script>
+    <script nonce="{{nonce}}">
+      require.config({
+        'vs/nls': { availableLanguages: { '*': '' } }
+      });
+    </script>
   </head>
   <body>
     <div id="app-container">
@@ -205,8 +214,8 @@
                   </button>
                 </div>
                 <div class="payload-viewer-wrapper" style="flex: 1">
-                  <pre id="payload-display" class="payload-display">
-Select a topic to view its latest received payload.</pre>
+                  <div id="payload-monaco-container" style="height: 100%; width: 100%;"></div>
+                  <div id="payload-display-fallback" style="display: none;">Select a topic to view its latest received payload.</div>
                 </div>
               </div>
             </div>
@@ -368,6 +377,24 @@ Select a topic to view its latest received payload.</pre>
 
 
 
+    <script nonce="{{nonce}}">
+      window.monacoReady = new Promise(function(resolve) {
+        require(["vs/editor/editor.main"], function () {
+          window.payloadMonacoEditor = monaco.editor.create(document.getElementById('payload-monaco-container'), {
+            value: "Select a topic to view its latest received payload.",
+            language: "text",
+            theme: "vs-dark",
+            readOnly: true,
+            minimap: { enabled: false },
+            automaticLayout: true,
+            scrollBeyondLastLine: false,
+            wordWrap: "on"
+          });
+          
+          resolve(window.payloadMonacoEditor);
+        });
+      });
+    </script>
     <script nonce="{{nonce}}" src="{{scriptUri}}"></script>
   </body>
 </html>

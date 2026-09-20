@@ -219,6 +219,7 @@
   },
   "dependencies": {
     "echarts": "^6.1.0",
+    "monaco-editor": "^0.56.0",
     "mqtt": "^5.10.1"
   },
   "devDependencies": {

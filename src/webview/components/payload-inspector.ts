@@ -42,7 +42,7 @@ export function updateSelectedTopicDetails() {
     topicMetadataBar.style.display = 'none';
     btnCopyTopic.style.display = 'none';
     btnCopyPayload.style.display = 'none';
-    setTextContentIfChanged(payloadDisplay, 'Select a topic to view its latest received payload.');
+    updatePayloadView(undefined);
     tabBtnPayload.style.display = 'inline-block';
     tabBtnTraffic.style.display = 'none';
     tabBtnHistory.style.display = 'inline-block';
@@ -150,7 +150,7 @@ export function updateSelectedTopicDetails() {
         : '0'
     );
     renderUserProperties();
-    setTextContentIfChanged(payloadDisplay, 'No payload received for this topic.');
+    updatePayloadView(undefined);
   }
 
   if (hasChildren) {
@@ -166,8 +166,51 @@ export function updatePayloadView(
   const node = state.selectedTopic ? findNode(state.rootTree, state.selectedTopic) : null;
   const msg = message || (node ? node.lastMessage : undefined);
 
+  const applyContent = (text: string, isJson: boolean = false) => {
+    // Check if this is the main payload display which we replaced with Monaco
+    if (
+      displayElement.id === 'payload-display' ||
+      displayElement.id === 'payload-monaco-container' ||
+      !displayElement.id
+    ) {
+      // Wait for Monaco to be ready if it's not yet
+      const win = window as unknown as {
+        payloadMonacoEditor?: { setValue(v: string): void; updateOptions(o: unknown): void };
+        monacoReady?: Promise<{ setValue(v: string): void; updateOptions(o: unknown): void }>;
+      };
+      if (win.payloadMonacoEditor) {
+        win.payloadMonacoEditor.setValue(text);
+        win.payloadMonacoEditor.updateOptions({ language: isJson ? 'json' : 'text' });
+        // hide fallback
+        const fallback = document.getElementById('payload-display-fallback');
+        if (fallback) {
+          fallback.style.display = 'none';
+        }
+      } else if (win.monacoReady) {
+        win.monacoReady.then(
+          (editor: { setValue(v: string): void; updateOptions(o: unknown): void }) => {
+            editor.setValue(text);
+            editor.updateOptions({ language: isJson ? 'json' : 'text' });
+            const fallback = document.getElementById('payload-display-fallback');
+            if (fallback) {
+              fallback.style.display = 'none';
+            }
+          }
+        );
+      } else {
+        setTextContentIfChanged(displayElement, text);
+      }
+    } else {
+      if (isJson) {
+        displayElement.innerHTML = syntaxHighlightJson(text);
+      } else {
+        setTextContentIfChanged(displayElement, text);
+      }
+    }
+  };
+
   if (!msg) {
-    setTextContentIfChanged(displayElement, 'No payload available.');
+    applyContent('No payload available.', false);
     delete displayElement.dataset.renderedMessageId;
     delete displayElement.dataset.renderedFormat;
     return;
@@ -185,19 +228,19 @@ export function updatePayloadView(
   switch (formatToUse) {
     case 'auto':
       if (msg.isJson && msg.formattedJson) {
-        displayElement.innerHTML = syntaxHighlightJson(msg.formattedJson);
+        applyContent(msg.formattedJson, true);
       } else {
-        setTextContentIfChanged(displayElement, msg.payload);
+        applyContent(msg.payload, false);
       }
       break;
     case 'text':
-      setTextContentIfChanged(displayElement, msg.payload);
+      applyContent(msg.payload, false);
       break;
     case 'hex':
-      setTextContentIfChanged(displayElement, formatHexDump(msg.payloadBuffer || ''));
+      applyContent(formatHexDump(msg.payloadBuffer || ''), false);
       break;
     case 'base64':
-      setTextContentIfChanged(displayElement, msg.payloadBuffer || btoa(msg.payload));
+      applyContent(msg.payloadBuffer || btoa(msg.payload), false);
       break;
   }
 

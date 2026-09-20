@@ -127,7 +127,8 @@ export const standardPayloadView = document.getElementById('standard-payload-vie
 export const intermediateNodeView = document.getElementById(
   'intermediate-node-view'
 ) as HTMLElement;
-export const payloadDisplay = document.getElementById('payload-display') as HTMLElement;
+export const payloadDisplay = (document.getElementById('payload-monaco-container') ||
+  document.getElementById('payload-display')) as HTMLElement;
 export const btnFirehose = document.getElementById('btn-firehose') as HTMLButtonElement;
 export const btnSankey = document.getElementById('btn-sankey') as HTMLButtonElement;
 export const firehoseContainer = document.getElementById('firehose-container') as HTMLElement;
