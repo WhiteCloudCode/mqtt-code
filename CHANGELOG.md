@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.7.1] (2026-09-17
+- Added screenshot to screengrab section in README.a
+
 ## [0.7.0] (2026-09-16)
 - refactor codebase for improved maintainability and performance
 - Updated tabbed inspector view to include traffic tab for live message monitoring.

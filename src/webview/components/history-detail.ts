@@ -2,13 +2,24 @@ import { MqttMessage } from '../../models/mqtt-message';
 import { state } from '../state';
 import { updatePayloadView } from './payload-inspector';
 import { formatBytes, escapeHtml, renderSelectableTopic } from '../dom';
+import { activateTab } from '../events';
 
-export function showHistoryModal(msg: MqttMessage) {
+export function showHistoryDetail(msg: MqttMessage) {
   state.currentHistoryMessage = msg;
-  const modal = document.getElementById('history-modal');
-  if (modal) {
-    modal.style.display = 'flex';
-    const title = document.getElementById('history-modal-title');
+  const detailView = document.getElementById('history-detail-view');
+  const masterView = document.getElementById('history-master-view');
+
+  if (detailView && masterView) {
+    const tabBtnHistory = document.getElementById('tab-btn-history');
+    if (tabBtnHistory) {
+      tabBtnHistory.style.display = 'inline-block';
+      tabBtnHistory.textContent = 'Message Details';
+    }
+    activateTab('tab-history');
+    masterView.style.display = 'none';
+    detailView.style.display = 'flex';
+
+    const title = document.getElementById('history-detail-title');
     if (title) {
       title.textContent = `Message Properties (${new Date(msg.timestamp).toLocaleTimeString()})`;
     }
@@ -29,7 +40,7 @@ export function showHistoryModal(msg: MqttMessage) {
       metaSize.textContent = formatBytes(msg.sizeBytes);
     }
 
-    const historyUserProps = document.getElementById('history-modal-user-properties');
+    const historyUserProps = document.getElementById('history-detail-user-properties');
     if (historyUserProps) {
       if (msg.userProperties && Object.keys(msg.userProperties).length > 0) {
         historyUserProps.style.display = 'block';
@@ -53,5 +64,19 @@ export function showHistoryModal(msg: MqttMessage) {
       document.getElementById('history-payload-display') as HTMLElement,
       state.historyFormat
     );
+  }
+}
+
+export function hideHistoryDetail() {
+  const detailView = document.getElementById('history-detail-view');
+  const masterView = document.getElementById('history-master-view');
+  if (detailView && masterView) {
+    detailView.style.display = 'none';
+    masterView.style.display = 'block';
+    
+    const tabBtnHistory = document.getElementById('tab-btn-history');
+    if (tabBtnHistory) {
+      tabBtnHistory.textContent = 'Message History';
+    }
   }
 }

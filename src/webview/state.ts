@@ -15,6 +15,7 @@ export const vscode = acquireVsCodeApi();
 export const state = {
   rootTree: null as SerialisedTopicNode | null,
   selectedTopic: null as string | null,
+  previousSelectedTopic: null as string | null,
   currentFormat: 'auto' as 'auto' | 'text' | 'hex' | 'base64',
   userToggledNodes: new Map<string, boolean>(),
   currentViewMode: 'tree' as 'tree' | 'list',

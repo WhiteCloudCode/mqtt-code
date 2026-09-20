@@ -3,7 +3,7 @@ import { state } from '../state';
 import { firehoseContainer, sankeyContainer, btnFirehose, btnSankey } from '../dom';
 import { getDescendantMessages } from '../utils/tree-utils';
 import { renderSankeyChart } from './sankey';
-import { showHistoryModal } from '../components/history-modal';
+import { showHistoryDetail } from '../components/history-detail';
 
 export function renderIntermediateNodeView(node: SerialisedTopicNode) {
   if (state.intermediateViewMode === 'firehose') {
@@ -48,7 +48,7 @@ export function renderIntermediateNodeView(node: SerialisedTopicNode) {
       row.appendChild(preview);
 
       row.addEventListener('mousedown', () => {
-        showHistoryModal(msg);
+        showHistoryDetail(msg);
       });
 
       fragment.appendChild(row);

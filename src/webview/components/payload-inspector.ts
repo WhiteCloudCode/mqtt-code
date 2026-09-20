@@ -2,7 +2,7 @@ import { MqttMessage } from '../../models/mqtt-message';
 import { SerialisedTopicNode } from '../../models/topic-node';
 import { state } from '../state';
 import { findNode } from '../utils/tree-utils';
-import { showHistoryModal } from './history-modal';
+import { showHistoryDetail, hideHistoryDetail } from './history-detail';
 import {
   setTextContentIfChanged,
   formatBytes,
@@ -32,6 +32,11 @@ import { activateTab } from '../events';
 import { renderIntermediateNodeView } from '../views/firehose';
 
 export function updateSelectedTopicDetails() {
+  if (state.previousSelectedTopic !== state.selectedTopic) {
+    hideHistoryDetail();
+    state.previousSelectedTopic = state.selectedTopic;
+  }
+
   if (!state.selectedTopic) {
     selectedTopicTitle.innerHTML = 'Select a topic from the left';
     topicMetadataBar.style.display = 'none';
@@ -83,11 +88,20 @@ export function updateSelectedTopicDetails() {
   } else if (!hasMessages && hasChildren) {
     // Intermediate node
     tabBtnPayload.style.display = 'none';
-    tabBtnHistory.style.display = 'none';
     tabBtnProperties.style.display = 'none';
     tabBtnTraffic.style.display = 'inline-block';
 
-    activateTab('tab-traffic');
+    const historyDetailView = document.getElementById('history-detail-view');
+    const isHistoryDetailOpen = historyDetailView && historyDetailView.style.display !== 'none';
+    
+    if (isHistoryDetailOpen) {
+      tabBtnHistory.style.display = 'inline-block';
+    } else {
+      tabBtnHistory.style.display = 'none';
+      if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') !== 'tab-traffic') {
+        activateTab('tab-traffic');
+      }
+    }
   } else {
     // Hybrid node (has messages and children)
     tabBtnPayload.style.display = 'inline-block';
@@ -235,7 +249,7 @@ export function renderHistoryTable() {
       const idx = parseInt((e.currentTarget as HTMLElement).dataset.index || '0', 10);
       const msg = state.currentHistory[idx];
       if (msg) {
-        showHistoryModal(msg);
+        showHistoryDetail(msg);
       }
     });
   });

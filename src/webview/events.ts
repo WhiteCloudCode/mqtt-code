@@ -22,13 +22,14 @@ import {
   pubValidationMsg,
   btnFirehose,
   btnSankey,
-  btnCloseHistoryModal,
-  historyModal,
+  btnCloseHistoryDetail,
+  historyDetailView,
+  historyMasterView,
 } from './dom';
 
 import { findNode } from './utils/tree-utils';
 import { renderTopics } from './main';
-import { updatePayloadView } from './components/payload-inspector';
+import { updatePayloadView, updateSelectedTopicDetails } from './components/payload-inspector';
 import { renderIntermediateNodeView } from './views/firehose';
 import { setAllNodesToggledState } from './utils/toggle-utils';
 
@@ -135,14 +136,11 @@ export function initialiseEventListeners() {
     }
   });
 
-  if (btnCloseHistoryModal && historyModal) {
-    btnCloseHistoryModal.addEventListener('click', () => {
-      historyModal.style.display = 'none';
-    });
-    historyModal.addEventListener('click', (e) => {
-      if (e.target === historyModal) {
-        historyModal.style.display = 'none';
-      }
+  if (btnCloseHistoryDetail && historyDetailView && historyMasterView) {
+    btnCloseHistoryDetail.addEventListener('click', () => {
+      historyDetailView.style.display = 'none';
+      historyMasterView.style.display = 'block';
+      updateSelectedTopicDetails();
     });
   }
 

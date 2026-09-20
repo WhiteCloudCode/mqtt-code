@@ -498,6 +498,7 @@ body {
 .topic-segment-slash {
   color: var(--vscode-descriptionForeground, #cccccc);
   font-weight: normal;
+  margin: 0 4px;
 }
 
 .detail-actions {
@@ -915,63 +916,4 @@ textarea:focus-visible,
   background-color: var(--vscode-list-hoverBackground, #2a2d2e);
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-.modal-dialog {
-  background-color: var(--vscode-editor-background);
-  border: 1px solid var(--vscode-panel-border, #333);
-  border-radius: 6px;
-  width: 80%;
-  max-width: 800px;
-  height: 70%;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--vscode-panel-border, #333);
-  background-color: var(--vscode-sideBar-background, #252526);
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 14px;
-}
-
-.close-modal-btn {
-  background: none;
-  border: none;
-  color: var(--vscode-foreground);
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.close-modal-btn:hover {
-  color: var(--vscode-button-hoverBackground);
-}
-
-.modal-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  overflow: hidden;
-}

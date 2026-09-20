@@ -150,7 +150,8 @@ export const btnFormatJson = document.getElementById('btn-format-json') as HTMLB
 export const btnSampleJson = document.getElementById('btn-sample-json') as HTMLButtonElement;
 export const pubValidationMsg = document.getElementById('pub-validation-message') as HTMLElement;
 
-export const historyModal = document.getElementById('history-modal') as HTMLElement;
-export const btnCloseHistoryModal = document.getElementById(
-  'btn-close-history-modal'
+export const historyMasterView = document.getElementById('history-master-view') as HTMLElement;
+export const historyDetailView = document.getElementById('history-detail-view') as HTMLElement;
+export const btnCloseHistoryDetail = document.getElementById(
+  'btn-close-history-detail'
 ) as HTMLButtonElement;
