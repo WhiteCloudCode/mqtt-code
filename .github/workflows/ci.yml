@@ -28,7 +28,7 @@ jobs:
     - name: Check formatting
       run: npm run format:check
       
-    - name: Run ESLint
+    - name: Run Linter & Spellcheck
       run: npm run lint
       
     - name: Compile Extension

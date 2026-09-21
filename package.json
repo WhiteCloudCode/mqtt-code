@@ -223,9 +223,9 @@
     "spellcheck": "cspell \"**/*.{ts,md,html,css,json,js}\"",
     "format": "prettier --write src",
     "format:check": "prettier --check src",
-    "release:patch": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as patch && npx --yes @vscode/vsce package --allow-missing-repository",
-    "release:minor": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as minor && npx --yes @vscode/vsce package --allow-missing-repository",
-    "release:major": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as major && npx --yes @vscode/vsce package --allow-missing-repository",
+    "release:patch": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as patch && npx --yes @vscode/vsce package",
+    "release:minor": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as minor && npx --yes @vscode/vsce package",
+    "release:major": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as major && npx --yes @vscode/vsce package",
     "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
