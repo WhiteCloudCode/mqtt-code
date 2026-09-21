@@ -11,7 +11,10 @@ interface VsCodeApi {
 }
 
 declare function acquireVsCodeApi(): VsCodeApi;
-export const vscode = typeof acquireVsCodeApi !== 'undefined' ? acquireVsCodeApi() : { postMessage: () => {}, getState: () => undefined, setState: () => {} } as any;
+export const vscode =
+  typeof acquireVsCodeApi !== 'undefined'
+    ? acquireVsCodeApi()
+    : ({ postMessage: () => {}, getState: () => undefined, setState: () => {} } as VsCodeApi);
 
 // Global State
 export const state = {

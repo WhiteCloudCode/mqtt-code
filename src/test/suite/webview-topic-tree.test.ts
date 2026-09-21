@@ -1,9 +1,9 @@
-
 // Mock acquireVsCodeApi before importing any webview code
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (global as any).acquireVsCodeApi = () => ({
   postMessage: () => {},
   getState: () => undefined,
-  setState: () => {}
+  setState: () => {},
 });
 import * as assert from 'assert';
 import { buildTreeHTML } from '../../webview/views/topic-tree';

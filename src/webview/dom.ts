@@ -146,7 +146,7 @@ export const publishForm = document.getElementById('publish-form') as HTMLFormEl
 export const pubTopic = document.getElementById('pub-topic') as HTMLInputElement;
 export const pubQos = document.getElementById('pub-qos') as HTMLSelectElement;
 export const pubRetain = document.getElementById('pub-retain') as HTMLInputElement;
-export const pubPayload = document.getElementById('pub-payload') as HTMLTextAreaElement;
+// pubPayload replaced by pub-monaco-container in HTML
 export const btnFormatJson = document.getElementById('btn-format-json') as HTMLButtonElement;
 export const btnSampleJson = document.getElementById('btn-sample-json') as HTMLButtonElement;
 export const pubValidationMsg = document.getElementById('pub-validation-message') as HTMLElement;
@@ -156,3 +156,4 @@ export const historyDetailView = document.getElementById('history-detail-view') 
 export const btnCloseHistoryDetail = document.getElementById(
   'btn-close-history-detail'
 ) as HTMLButtonElement;
+export const toastContainer = document.getElementById('toast-container') as HTMLDivElement;

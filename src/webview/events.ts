@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { state, vscode } from './state';
 import {
   topicTreeContainer,
@@ -14,13 +15,13 @@ import {
   btnRefreshState,
   btnCopyTopic,
   btnCopyPayload,
+  toastContainer,
   btnFormatJson,
   btnSampleJson,
   publishForm,
   pubTopic,
   pubQos,
   pubRetain,
-  pubPayload,
   pubValidationMsg,
   btnFirehose,
   btnSankey,
@@ -40,22 +41,38 @@ function switchViewMode(mode: 'tree' | 'list') {
   if (mode === 'tree') {
     btnViewTree.classList.add('active');
     btnViewList.classList.remove('active');
+    topicTreeContainer.style.display = 'block';
+    topicListContainer.style.display = 'none';
   } else {
     btnViewList.classList.add('active');
     btnViewTree.classList.remove('active');
+    topicTreeContainer.style.display = 'none';
+    topicListContainer.style.display = 'block';
   }
   renderTopics();
 }
 
-function showCopyConfirmation(btn: HTMLButtonElement, originalHtml: string) {
-  const currentHtml = btn.innerHTML;
-  if (currentHtml.includes('codicon-check')) {
+function showToast(message: string) {
+  if (!toastContainer) {
     return;
   }
-  btn.innerHTML = '<span class="codicon codicon-check"></span> Copied!';
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  const icon = document.createElement('span');
+  icon.className = 'codicon codicon-check';
+  const textNode = document.createElement('span');
+  textNode.textContent = message;
+  toast.appendChild(icon);
+  toast.appendChild(textNode);
+
+  toastContainer.appendChild(toast);
+
+  // The CSS animation takes 2.5s total (0.3s fade in, wait, 0.5s fade out starting at 2s).
   setTimeout(() => {
-    btn.innerHTML = originalHtml;
-  }, 2000);
+    if (toastContainer.contains(toast)) {
+      toastContainer.removeChild(toast);
+    }
+  }, 2600);
 }
 
 export function activateTab(tabId: string) {
@@ -222,6 +239,9 @@ function initSearch() {
 }
 
 function initCopyActions() {
+  const truncateText = (str: string, maxLength = 40) =>
+    str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
+
   document.addEventListener('mousedown', (e) => {
     const target = e.target as HTMLElement;
     if (target.classList.contains('topic-segment-badge')) {
@@ -232,6 +252,7 @@ function initCopyActions() {
       selection?.removeAllRanges();
       selection?.addRange(range);
       navigator.clipboard.writeText(text);
+      showToast('Copied topic segment: ' + truncateText(text));
 
       target.classList.remove('flash-update');
       requestAnimationFrame(() => {
@@ -245,7 +266,7 @@ function initCopyActions() {
   btnCopyTopic.addEventListener('click', () => {
     if (state.selectedTopic) {
       navigator.clipboard.writeText(state.selectedTopic);
-      showCopyConfirmation(btnCopyTopic, '<span class="codicon codicon-copy"></span> Topic');
+      showToast('Copied topic: ' + truncateText(state.selectedTopic));
     }
   });
 
@@ -263,16 +284,34 @@ function initCopyActions() {
     }
     if (displayNode?.lastMessage) {
       navigator.clipboard.writeText(displayNode.lastMessage.payload);
-      showCopyConfirmation(btnCopyPayload, '<span class="codicon codicon-copy"></span> Payload');
+      showToast('Copied payload: ' + truncateText(displayNode.lastMessage.payload));
     }
   });
 }
 
 function initPublishForm() {
+  if ((window as any).monacoReady) {
+    (window as any).monacoReady.then(() => {
+      if ((window as any).pubMonacoEditor) {
+        (window as any).pubMonacoEditor.onDidChangeModelContent(() => {
+          pubValidationMsg.textContent = '';
+        });
+      }
+    });
+  }
+
+  pubTopic.addEventListener('input', () => {
+    pubValidationMsg.textContent = '';
+  });
+
   btnFormatJson.addEventListener('click', () => {
     try {
-      const parsed = JSON.parse(pubPayload.value);
-      pubPayload.value = JSON.stringify(parsed, null, 2);
+      const parsed = JSON.parse(
+        (window as any).pubMonacoEditor ? (window as any).pubMonacoEditor.getValue() : ''
+      );
+      if ((window as any).pubMonacoEditor) {
+        (window as any).pubMonacoEditor.setValue(JSON.stringify(parsed, null, 2));
+      }
       pubValidationMsg.textContent = '';
     } catch {
       pubValidationMsg.textContent = 'Invalid JSON in payload.';
@@ -280,17 +319,21 @@ function initPublishForm() {
   });
 
   btnSampleJson.addEventListener('click', () => {
-    pubPayload.value = JSON.stringify(
-      {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        device_id: 'sensor-alpha-01',
-        temperature: 22.4,
-        humidity: 58.2,
-        timestamp: new Date().toISOString(),
-      },
-      null,
-      2
-    );
+    if ((window as any).pubMonacoEditor) {
+      (window as any).pubMonacoEditor.setValue(
+        JSON.stringify(
+          {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            device_id: 'sensor-alpha-01',
+            temperature: 22.4,
+            humidity: 58.2,
+            timestamp: new Date().toISOString(),
+          },
+          null,
+          2
+        )
+      );
+    }
     if (!pubTopic.value) {
       pubTopic.value = 'sensors/telemetry/sample';
     }
@@ -299,7 +342,9 @@ function initPublishForm() {
   publishForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const topic = pubTopic.value.trim();
-    const payload = pubPayload.value;
+    const payload = (window as any).pubMonacoEditor
+      ? (window as any).pubMonacoEditor.getValue()
+      : '';
     const qos = Number.parseInt(pubQos.value, 10) as 0 | 1 | 2;
     const retain = pubRetain.checked;
 
