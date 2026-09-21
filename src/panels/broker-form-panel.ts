@@ -6,6 +6,10 @@ import * as mqtt from 'mqtt';
 import { BrokerProfile } from '../models/broker-profile';
 import { StorageService } from '../services/storage-service';
 import { BrokerTreeProvider } from '../views/broker-tree-provider';
+import {
+  BrokerFormToExtensionMessage,
+  ExtensionToBrokerFormMessage,
+} from '../types/broker-form-messages';
 import { LogService } from '../services/log-service';
 
 export class BrokerFormPanel {
@@ -94,12 +98,7 @@ export class BrokerFormPanel {
     );
   }
 
-  private async handleWebviewMessage(message: {
-    type: string;
-    profile?: BrokerProfile;
-    password?: string;
-    targetField?: string;
-  }): Promise<void> {
+  private async handleWebviewMessage(message: BrokerFormToExtensionMessage): Promise<void> {
     switch (message.type) {
       case 'ready':
       case 'requestInitData':
@@ -246,7 +245,7 @@ export class BrokerFormPanel {
     }
   }
 
-  private postMessage(message: unknown): void {
+  private postMessage(message: ExtensionToBrokerFormMessage): void {
     if (this._isDisposed) {
       return;
     }

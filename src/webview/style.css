@@ -333,9 +333,6 @@ body {
   color: var(--vscode-list-activeSelectionForeground, #ffffff);
 }
 
-.tree-node-row.flash-update {
-  animation: flashEffect 0.8s ease-out;
-}
 
 @keyframes flashEffect {
   0% {
@@ -917,3 +914,45 @@ textarea:focus-visible,
 }
 
 
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  background-color: var(--vscode-notifications-background, #252526);
+  color: var(--vscode-notifications-foreground, #cccccc);
+  border: 1px solid var(--vscode-notifications-border, #303031);
+  padding: 8px 16px;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: toastFadeIn 0.3s ease-out, toastFadeOut 0.5s ease-in 2s forwards;
+  pointer-events: auto;
+}
+
+.toast .codicon {
+  color: var(--vscode-notificationsInfoIcon-foreground, #3794ff);
+}
+
+@keyframes toastFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
+}

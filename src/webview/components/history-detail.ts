@@ -61,7 +61,7 @@ export function showHistoryDetail(msg: MqttMessage) {
 
     updatePayloadView(
       msg,
-      document.getElementById('history-payload-display') as HTMLElement,
+      document.getElementById('history-payload-monaco-container') as HTMLElement,
       state.historyFormat
     );
   }
@@ -73,7 +73,7 @@ export function hideHistoryDetail() {
   if (detailView && masterView) {
     detailView.style.display = 'none';
     masterView.style.display = 'block';
-    
+
     const tabBtnHistory = document.getElementById('tab-btn-history');
     if (tabBtnHistory) {
       tabBtnHistory.textContent = 'Message History';

@@ -1,8 +1,9 @@
 // Broker Form Webview Client Script
 import { BrokerProfile, MqttProtocol, MqttVersion } from '../../models/broker-profile';
+import { BrokerFormToExtensionMessage } from '../../types/broker-form-messages';
 
 interface VsCodeApi {
-  postMessage(message: unknown): void;
+  postMessage(message: BrokerFormToExtensionMessage): void;
   getState(): unknown;
   setState(state: unknown): void;
 }

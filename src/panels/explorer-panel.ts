@@ -139,12 +139,7 @@ export class ExplorerPanel {
     this.connectionManager.on('subscriptionChange', this._onSubscriptionChange);
   }
 
-  private async handleWebviewMessage(message: {
-    type: string;
-    data?: unknown;
-    topic?: string;
-    qos?: 0 | 1 | 2;
-  }): Promise<void> {
+  private async handleWebviewMessage(message: WebviewToExtensionMessage): Promise<void> {
     switch (message.type) {
       case 'requestState':
         this.sendFullState();
@@ -169,6 +164,13 @@ export class ExplorerPanel {
         break;
       case 'savePublisherState':
         await this.storageService.setPublisherOpenState(Boolean(message.data));
+        break;
+      case 'executeCommand':
+        if (message.args) {
+          vscode.commands.executeCommand(message.command, ...message.args);
+        } else {
+          vscode.commands.executeCommand(message.command);
+        }
         break;
       case 'saveLayoutState': {
         const payload = message.data as { topicPaneWidth?: string } | undefined;
@@ -291,10 +293,17 @@ export class ExplorerPanel {
 
   private updateWebviewContent(): void {
     const webview = this._panel.webview;
-    const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'main.js');
     const stylePathOnDisk = vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'style.css');
 
-    const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'main.js')
+    );
+    const monacoBaseUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'vs')
+    );
+    const monacoLoaderUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'vs', 'loader.js')
+    );
     const styleUri = webview.asWebviewUri(stylePathOnDisk);
 
     const nonce = getNonce();
@@ -315,7 +324,9 @@ export class ExplorerPanel {
         .replaceAll('{{styleUri}}', styleUri.toString())
         .replaceAll('{{cspSource}}', webview.cspSource)
         .replaceAll('{{publisherOpenAttr}}', publisherOpenAttr)
-        .replaceAll('{{topicPaneWidthStyle}}', topicPaneWidthStyle);
+        .replaceAll('{{topicPaneWidthStyle}}', topicPaneWidthStyle)
+        .replaceAll('{{monacoBaseUri}}', monacoBaseUri.toString())
+        .replaceAll('{{monacoLoaderUri}}', monacoLoaderUri.toString());
     } else {
       // Fallback for local development if dist doesn't have it yet
       const srcHtmlPath = path.join(this._extensionUri.fsPath, 'src', 'webview', 'index.html');
@@ -327,7 +338,9 @@ export class ExplorerPanel {
           .replaceAll('{{styleUri}}', styleUri.toString())
           .replaceAll('{{cspSource}}', webview.cspSource)
           .replaceAll('{{publisherOpenAttr}}', publisherOpenAttr)
-          .replaceAll('{{topicPaneWidthStyle}}', topicPaneWidthStyle);
+          .replaceAll('{{topicPaneWidthStyle}}', topicPaneWidthStyle)
+          .replaceAll('{{monacoBaseUri}}', monacoBaseUri.toString())
+          .replaceAll('{{monacoLoaderUri}}', monacoLoaderUri.toString());
       } else {
         htmlContent = `<!DOCTYPE html><html><body><p>Loading MQTT Code Explorer...</p></body></html>`;
       }

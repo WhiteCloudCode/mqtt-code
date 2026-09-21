@@ -6,6 +6,7 @@ import { updateConnectionStatus } from './components/metadata';
 import { updateSelectedTopicDetails, renderHistoryTable } from './components/payload-inspector';
 import { topicCountBadge, setTextContentIfChanged } from './dom';
 import { computeAggregatedMessageCounts } from './utils/tree-utils';
+import { ExtensionToWebviewMessage } from '../types/webview-messages';
 
 export function renderTopics() {
   if (state.currentViewMode === 'tree') {
@@ -23,7 +24,7 @@ export function renderTopics() {
   }
 }
 
-window.addEventListener('message', (event: MessageEvent) => {
+window.addEventListener('message', (event: MessageEvent<ExtensionToWebviewMessage>) => {
   if (event.origin !== window.location.origin && event.origin !== '') {
     return;
   }

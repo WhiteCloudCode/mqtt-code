@@ -34,6 +34,14 @@ async function build() {
     path.join(brokerFormDist, 'style.css')
   );
 
+  // Copy Monaco Editor
+  const monacoDist = path.join(webviewDist, 'vs');
+  if (!fs.existsSync(monacoDist)) {
+    fs.mkdirSync(monacoDist, { recursive: true });
+    fs.cpSync(path.join(__dirname, 'node_modules', 'monaco-editor', 'min', 'vs'), monacoDist, { recursive: true });
+  }
+
+
   // Extension Host build context
   const extensionContext = await esbuild.context({
     entryPoints: ['src/extension.ts'],

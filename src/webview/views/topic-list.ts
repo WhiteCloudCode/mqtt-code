@@ -1,8 +1,6 @@
 import { SerialisedTopicNode } from '../../models/topic-node';
-import { state, vscode } from '../state';
+import { state } from '../state';
 import { topicListContainer, escapeHtml } from '../dom';
-import { updateSelectedTopicDetails } from '../components/payload-inspector';
-import { renderTopics } from '../main';
 
 export function doesNodeMatchFilter(node: SerialisedTopicNode, query: string): boolean {
   if (!query) {
@@ -28,6 +26,8 @@ export function doesNodeMatchFilter(node: SerialisedTopicNode, query: string): b
   return false;
 }
 
+import morphdom from 'morphdom';
+
 export function renderTopicList() {
   const allNodes: SerialisedTopicNode[] = [];
 
@@ -46,64 +46,38 @@ export function renderTopicList() {
 
   allNodes.sort((a, b) => b.lastUpdated - a.lastUpdated);
 
-  topicListContainer.innerHTML = '';
-
   if (allNodes.length === 0) {
-    topicListContainer.innerHTML = `
-      <div class="empty-state-message">
-        <p>No topics or payload data matching "${escapeHtml(state.filterQuery)}"</p>
-      </div>`;
+    const emptyHTML = `<div class="empty-state-message"><p>No topics or payload data matching "${escapeHtml(state.filterQuery)}"</p></div>`;
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = emptyHTML;
+    morphdom(topicListContainer, wrapper, { childrenOnly: true });
     return;
   }
 
-  const fragment = document.createDocumentFragment();
+  let html = '';
   for (const node of allNodes) {
     if (state.filterQuery && !doesNodeMatchFilter(node, state.filterQuery)) {
       continue;
     }
 
-    const row = document.createElement('div');
-    row.className = `list-node-row ${state.selectedTopic === node.fullTopic ? 'selected' : ''}`;
-
-    const header = document.createElement('div');
-    header.className = 'list-node-header';
-
-    const topicSpan = document.createElement('span');
-    topicSpan.className = 'list-node-topic';
-    topicSpan.textContent = node.fullTopic;
-
-    const timeSpan = document.createElement('span');
-    timeSpan.className = 'list-node-time';
     const date = new Date(node.lastUpdated);
-    timeSpan.textContent = date.toLocaleTimeString();
-
-    header.appendChild(topicSpan);
-    header.appendChild(timeSpan);
-
-    const preview = document.createElement('div');
-    preview.className = 'list-node-preview';
+    const selectedCls = state.selectedTopic === node.fullTopic ? 'selected' : '';
+    let preview = 'No messages';
     if (node.lastMessage) {
-      preview.textContent = node.lastMessage.payload || '<empty payload>';
-    } else {
-      preview.textContent = 'No messages';
+      preview = node.lastMessage.payload || '<empty payload>';
     }
 
-    row.appendChild(header);
-    row.appendChild(preview);
-
-    row.addEventListener('mousedown', () => {
-      state.selectedTopic = node.fullTopic;
-      const pubTopic = document.getElementById('pub-topic') as HTMLInputElement;
-      if (pubTopic) {
-        pubTopic.value = node.fullTopic;
-      }
-      updateSelectedTopicDetails();
-      renderTopics();
-      vscode.postMessage({ type: 'requestHistory', topic: node.fullTopic });
-    });
-
-    fragment.appendChild(row);
+    html += `
+      <div class="list-node-row ${selectedCls}" data-topic="${escapeHtml(node.fullTopic)}">
+        <div class="list-node-header">
+          <span class="list-node-topic">${escapeHtml(node.fullTopic)}</span>
+          <span class="list-node-time">${date.toLocaleTimeString()}</span>
+        </div>
+        <div class="list-node-preview">${escapeHtml(preview)}</div>
+      </div>`;
   }
 
-  topicListContainer.appendChild(fragment);
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = html;
+  morphdom(topicListContainer, wrapper, { childrenOnly: true });
 }

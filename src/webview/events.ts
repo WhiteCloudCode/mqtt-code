@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { state, vscode } from './state';
 import {
+  topicTreeContainer,
+  topicListContainer,
   topicPane,
   paneResizer,
   btnViewTree,
@@ -12,14 +15,16 @@ import {
   btnRefreshState,
   btnCopyTopic,
   btnCopyPayload,
+  toastContainer,
   btnFormatJson,
   btnSampleJson,
   publishForm,
   pubTopic,
   pubQos,
   pubRetain,
-  pubPayload,
   pubValidationMsg,
+  btnAddProp,
+  pubPropertiesContainer,
   btnFirehose,
   btnSankey,
   btnCloseHistoryDetail,
@@ -38,22 +43,38 @@ function switchViewMode(mode: 'tree' | 'list') {
   if (mode === 'tree') {
     btnViewTree.classList.add('active');
     btnViewList.classList.remove('active');
+    topicTreeContainer.style.display = 'block';
+    topicListContainer.style.display = 'none';
   } else {
     btnViewList.classList.add('active');
     btnViewTree.classList.remove('active');
+    topicTreeContainer.style.display = 'none';
+    topicListContainer.style.display = 'block';
   }
   renderTopics();
 }
 
-function showCopyConfirmation(btn: HTMLButtonElement, originalHtml: string) {
-  const currentHtml = btn.innerHTML;
-  if (currentHtml.includes('codicon-check')) {
+function showToast(message: string) {
+  if (!toastContainer) {
     return;
   }
-  btn.innerHTML = '<span class="codicon codicon-check"></span> Copied!';
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  const icon = document.createElement('span');
+  icon.className = 'codicon codicon-check';
+  const textNode = document.createElement('span');
+  textNode.textContent = message;
+  toast.appendChild(icon);
+  toast.appendChild(textNode);
+
+  toastContainer.appendChild(toast);
+
+  // The CSS animation takes 2.5s total (0.3s fade in, wait, 0.5s fade out starting at 2s).
   setTimeout(() => {
-    btn.innerHTML = originalHtml;
-  }, 2000);
+    if (toastContainer.contains(toast)) {
+      toastContainer.removeChild(toast);
+    }
+  }, 2600);
 }
 
 export function activateTab(tabId: string) {
@@ -70,8 +91,7 @@ export function activateTab(tabId: string) {
   content?.classList.add('active');
 }
 
-export function initialiseEventListeners() {
-  // Tabs
+function initTabs() {
   document.querySelectorAll('.tab-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const target = e.currentTarget as HTMLElement;
@@ -82,7 +102,6 @@ export function initialiseEventListeners() {
     });
   });
 
-  // Format buttons
   document.querySelectorAll('.format-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const target = e.currentTarget as HTMLElement;
@@ -102,7 +121,7 @@ export function initialiseEventListeners() {
         if (state.currentHistoryMessage) {
           updatePayloadView(
             state.currentHistoryMessage,
-            document.getElementById('history-payload-display') as HTMLElement,
+            document.getElementById('history-payload-monaco-container') as HTMLElement,
             state.historyFormat
           );
         }
@@ -113,29 +132,6 @@ export function initialiseEventListeners() {
     });
   });
 
-  // Handle clicks on individual topic segment badges
-  document.addEventListener('mousedown', (e) => {
-    const target = e.target as HTMLElement;
-    if (target.classList.contains('topic-segment-badge')) {
-      const text = target.textContent || '';
-
-      // Select the text programmatically to make it obvious
-      const selection = window.getSelection();
-      const range = document.createRange();
-      range.selectNodeContents(target);
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-
-      // Copy to clipboard
-      navigator.clipboard.writeText(text);
-
-      // Visual feedback
-      target.classList.remove('flash-update');
-      void target.offsetWidth; // Trigger reflow
-      target.classList.add('flash-update');
-    }
-  });
-
   if (btnCloseHistoryDetail && historyDetailView && historyMasterView) {
     btnCloseHistoryDetail.addEventListener('click', () => {
       historyDetailView.style.display = 'none';
@@ -143,7 +139,9 @@ export function initialiseEventListeners() {
       updateSelectedTopicDetails();
     });
   }
+}
 
+function initToolbar() {
   btnFirehose.addEventListener('click', () => {
     state.intermediateViewMode = 'firehose';
     const node = findNode(state.rootTree, state.selectedTopic || '');
@@ -163,6 +161,26 @@ export function initialiseEventListeners() {
   btnViewTree.addEventListener('click', () => switchViewMode('tree'));
   btnViewList.addEventListener('click', () => switchViewMode('list'));
 
+  btnExpandAll.addEventListener('click', () => {
+    setAllNodesToggledState(state.rootTree, false);
+    renderTopics();
+  });
+
+  btnCollapseAll.addEventListener('click', () => {
+    setAllNodesToggledState(state.rootTree, true);
+    renderTopics();
+  });
+
+  btnClearTree.addEventListener('click', () => {
+    vscode.postMessage({ type: 'clearTree' });
+  });
+
+  btnRefreshState.addEventListener('click', () => {
+    vscode.postMessage({ type: 'requestState' });
+  });
+}
+
+function initResizer() {
   let isResizing = false;
   paneResizer.addEventListener('mousedown', (e) => {
     isResizing = true;
@@ -207,16 +225,9 @@ export function initialiseEventListeners() {
       });
     });
   }
+}
 
-  btnExpandAll.addEventListener('click', () => {
-    setAllNodesToggledState(state.rootTree, false);
-    renderTopics();
-  });
-  btnCollapseAll.addEventListener('click', () => {
-    setAllNodesToggledState(state.rootTree, true);
-    renderTopics();
-  });
-
+function initSearch() {
   topicSearchInput.addEventListener('input', () => {
     state.filterQuery = topicSearchInput.value.trim().toLowerCase();
     renderTopics();
@@ -227,19 +238,37 @@ export function initialiseEventListeners() {
     state.filterQuery = '';
     renderTopics();
   });
+}
 
-  btnClearTree.addEventListener('click', () => {
-    vscode.postMessage({ type: 'clearTree' });
-  });
+function initCopyActions() {
+  const truncateText = (str: string, maxLength = 40) =>
+    str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
 
-  btnRefreshState.addEventListener('click', () => {
-    vscode.postMessage({ type: 'requestState' });
+  document.addEventListener('mousedown', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('topic-segment-badge')) {
+      const text = target.textContent || '';
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(target);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      navigator.clipboard.writeText(text);
+      showToast('Copied topic segment: ' + truncateText(text));
+
+      target.classList.remove('flash-update');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          target.classList.add('flash-update');
+        });
+      });
+    }
   });
 
   btnCopyTopic.addEventListener('click', () => {
     if (state.selectedTopic) {
       navigator.clipboard.writeText(state.selectedTopic);
-      showCopyConfirmation(btnCopyTopic, '<span class="codicon codicon-copy"></span> Topic');
+      showToast('Copied topic: ' + truncateText(state.selectedTopic));
     }
   });
 
@@ -257,14 +286,34 @@ export function initialiseEventListeners() {
     }
     if (displayNode?.lastMessage) {
       navigator.clipboard.writeText(displayNode.lastMessage.payload);
-      showCopyConfirmation(btnCopyPayload, '<span class="codicon codicon-copy"></span> Payload');
+      showToast('Copied payload: ' + truncateText(displayNode.lastMessage.payload));
     }
+  });
+}
+
+function initPublishForm() {
+  if ((window as any).monacoReady) {
+    (window as any).monacoReady.then(() => {
+      if ((window as any).pubMonacoEditor) {
+        (window as any).pubMonacoEditor.onDidChangeModelContent(() => {
+          pubValidationMsg.textContent = '';
+        });
+      }
+    });
+  }
+
+  pubTopic.addEventListener('input', () => {
+    pubValidationMsg.textContent = '';
   });
 
   btnFormatJson.addEventListener('click', () => {
     try {
-      const parsed = JSON.parse(pubPayload.value);
-      pubPayload.value = JSON.stringify(parsed, null, 2);
+      const parsed = JSON.parse(
+        (window as any).pubMonacoEditor ? (window as any).pubMonacoEditor.getValue() : ''
+      );
+      if ((window as any).pubMonacoEditor) {
+        (window as any).pubMonacoEditor.setValue(JSON.stringify(parsed, null, 2));
+      }
       pubValidationMsg.textContent = '';
     } catch {
       pubValidationMsg.textContent = 'Invalid JSON in payload.';
@@ -272,28 +321,81 @@ export function initialiseEventListeners() {
   });
 
   btnSampleJson.addEventListener('click', () => {
-    pubPayload.value = JSON.stringify(
-      {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        device_id: 'sensor-alpha-01',
-        temperature: 22.4,
-        humidity: 58.2,
-        timestamp: new Date().toISOString(),
-      },
-      null,
-      2
-    );
+    if ((window as any).pubMonacoEditor) {
+      (window as any).pubMonacoEditor.setValue(
+        JSON.stringify(
+          {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            device_id: 'sensor-alpha-01',
+            temperature: 22.4,
+            humidity: 58.2,
+            timestamp: new Date().toISOString(),
+          },
+          null,
+          2
+        )
+      );
+    }
     if (!pubTopic.value) {
       pubTopic.value = 'sensors/telemetry/sample';
     }
   });
 
+  if (btnAddProp) {
+    btnAddProp.addEventListener('click', () => {
+      const row = document.createElement('div');
+      row.className = 'pub-prop-row';
+      row.style.display = 'flex';
+      row.style.gap = '8px';
+      row.style.marginBottom = '4px';
+
+      const keyInput = document.createElement('input');
+      keyInput.type = 'text';
+      keyInput.placeholder = 'Property Key';
+      keyInput.className = 'pub-prop-key flex-1';
+      keyInput.required = true;
+
+      const valInput = document.createElement('input');
+      valInput.type = 'text';
+      valInput.placeholder = 'Property Value';
+      valInput.className = 'pub-prop-val flex-2';
+      valInput.required = true;
+
+      const rmBtn = document.createElement('button');
+      rmBtn.type = 'button';
+      rmBtn.className = 'mini-btn';
+      rmBtn.innerHTML = '<span class="codicon codicon-trash"></span>';
+      rmBtn.addEventListener('click', () => {
+        pubPropertiesContainer.removeChild(row);
+      });
+
+      row.appendChild(keyInput);
+      row.appendChild(valInput);
+      row.appendChild(rmBtn);
+      pubPropertiesContainer.appendChild(row);
+    });
+  }
+
   publishForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const topic = pubTopic.value.trim();
-    const payload = pubPayload.value;
+    const payload = (window as any).pubMonacoEditor
+      ? (window as any).pubMonacoEditor.getValue()
+      : '';
     const qos = Number.parseInt(pubQos.value, 10) as 0 | 1 | 2;
     const retain = pubRetain.checked;
+
+    const userProperties: Record<string, string> = {};
+    if (pubPropertiesContainer) {
+      const rows = pubPropertiesContainer.querySelectorAll('.pub-prop-row');
+      rows.forEach((row) => {
+        const k = (row.querySelector('.pub-prop-key') as HTMLInputElement).value.trim();
+        const v = (row.querySelector('.pub-prop-val') as HTMLInputElement).value.trim();
+        if (k) {
+          userProperties[k] = v;
+        }
+      });
+    }
 
     if (!topic) {
       pubValidationMsg.textContent = 'Topic is required.';
@@ -308,7 +410,75 @@ export function initialiseEventListeners() {
         payload,
         qos,
         retain,
+        userProperties: Object.keys(userProperties).length > 0 ? userProperties : undefined,
       },
     });
   });
+}
+
+export function initialiseEventListeners() {
+  topicTreeContainer.addEventListener('mousedown', (e) => {
+    const target = e.target as HTMLElement;
+
+    const twistie = target.closest('.tree-twistie');
+    if (twistie) {
+      e.stopPropagation();
+      const topic = twistie.getAttribute('data-twistie-topic');
+      const isCollapsed = twistie.getAttribute('data-twistie-collapsed') === 'true';
+      if (topic) {
+        state.userToggledNodes.set(topic, !isCollapsed);
+        renderTopics();
+      }
+      return;
+    }
+
+    const row = target.closest('.tree-node-row');
+    if (row) {
+      const topic = row.getAttribute('data-topic');
+      const hasChildren = row.getAttribute('data-has-children') === 'true';
+      const isCollapsed = row.getAttribute('data-is-collapsed') === 'true';
+
+      if (topic) {
+        state.selectedTopic = topic;
+        const pubTopicInput = document.getElementById('pub-topic') as HTMLInputElement;
+        if (pubTopicInput) {
+          pubTopicInput.value = topic;
+        }
+
+        if (hasChildren) {
+          state.userToggledNodes.set(topic, !isCollapsed);
+        }
+
+        updateSelectedTopicDetails();
+        renderTopics();
+        vscode.postMessage({ type: 'requestHistory', topic });
+      }
+    }
+  });
+
+  topicListContainer.addEventListener('mousedown', (e) => {
+    const target = e.target as HTMLElement;
+    const row = target.closest('.list-node-row');
+    if (row) {
+      const topic = row.getAttribute('data-topic');
+      if (topic) {
+        state.selectedTopic = topic;
+        const pubTopicInput = document.getElementById('pub-topic') as HTMLInputElement;
+        if (pubTopicInput) {
+          pubTopicInput.value = topic;
+        }
+
+        updateSelectedTopicDetails();
+        renderTopics();
+        vscode.postMessage({ type: 'requestHistory', topic });
+      }
+    }
+  });
+
+  initTabs();
+  initToolbar();
+  initResizer();
+  initSearch();
+  initCopyActions();
+  initPublishForm();
 }

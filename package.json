@@ -2,7 +2,7 @@
   "name": "mqtt-code",
   "displayName": "MQTT Code",
   "description": "A feature-rich MQTT explorer, topic visualiser, and message publisher for VS Code.",
-  "version": "0.7.1",
+  "version": "1.0.0",
   "publisher": "whitecloudcode",
   "repository": {
     "type": "git",
@@ -198,7 +198,17 @@
           "description": "Default Quality of Service (QoS) level for new subscriptions and publications."
         }
       }
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "mqtt-code-brokers",
+        "contents": "No MQTT brokers have been configured yet.\n[Add Broker](command:mqtt-code.add-broker)"
+      },
+      {
+        "view": "mqtt-code-subscriptions",
+        "contents": "Connect to a broker and add a subscription to see messages.\n[Add Subscription](command:mqtt-code.add-subscription)"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -208,29 +218,35 @@
     "test": "node ./dist/test/run-test.js",
     "test:ui": "mocha --ui tdd --require dist/test/suite/webview-setup.js dist/test/suite/webview-topic-tree.test.js",
     "test:unit": "mocha dist/test/suite/models.test.js dist/test/suite/topic-tree-manager.test.js",
-    "lint": "eslint src --ext ts",
+    "lint": "eslint src --ext ts && npm run spellcheck",
     "lint:fix": "eslint src --ext ts --fix",
+    "spellcheck": "cspell \"**/*.{ts,md,html,css,json,js}\"",
     "format": "prettier --write src",
     "format:check": "prettier --check src",
-    "release:patch": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as patch && npx --yes @vscode/vsce package --allow-missing-repository",
-    "release:minor": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as minor && npx --yes @vscode/vsce package --allow-missing-repository",
-    "release:major": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as major && npx --yes @vscode/vsce package --allow-missing-repository",
+    "release:patch": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as patch && npx --yes @vscode/vsce package",
+    "release:minor": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as minor && npx --yes @vscode/vsce package",
+    "release:major": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as major && npx --yes @vscode/vsce package",
     "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "echarts": "^6.1.0",
+    "monaco-editor": "^0.56.0",
+    "morphdom": "^2.7.8",
     "mqtt": "^5.10.1"
   },
   "devDependencies": {
+    "@cspell/dict-en-gb": "^5.0.34",
     "@eslint/js": "^10.0.1",
     "@types/jsdom": "^30.0.0",
     "@types/mocha": "^10.0.10",
+    "@types/morphdom": "^2.3.0",
     "@types/node": "^22.10.0",
     "@types/vscode": "^1.90.0",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.70.0",
     "@vscode/test-electron": "^3.1.0",
     "commit-and-tag-version": "^13.2.1",
+    "cspell": "^10.3.3",
     "esbuild": "^0.24.0",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",

@@ -4,11 +4,20 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}'; img-src {{cspSource}} https: data:;"
+      content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}' {{cspSource}} 'unsafe-eval'; worker-src blob: {{cspSource}}; img-src {{cspSource}} https: data:;"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{{styleUri}}" />
     <title>MQTT Code Explorer</title>
+    <script nonce="{{nonce}}">
+      var require = { paths: { 'vs': '{{monacoBaseUri}}' } };
+    </script>
+    <script nonce="{{nonce}}" src="{{monacoLoaderUri}}"></script>
+    <script nonce="{{nonce}}">
+      require.config({
+        'vs/nls': { availableLanguages: { '*': '' } }
+      });
+    </script>
   </head>
   <body>
     <div id="app-container">
@@ -205,8 +214,8 @@
                   </button>
                 </div>
                 <div class="payload-viewer-wrapper" style="flex: 1">
-                  <pre id="payload-display" class="payload-display">
-Select a topic to view its latest received payload.</pre>
+                  <div id="payload-monaco-container" style="height: 100%; width: 100%;"></div>
+                  <div id="payload-display-fallback" style="display: none;">Select a topic to view its latest received payload.</div>
                 </div>
               </div>
             </div>
@@ -298,7 +307,7 @@ Select a topic to view its latest received payload.</pre>
                   </div>
                   
                   <div class="payload-viewer-wrapper" style="flex: 1; margin-top: 0;">
-                    <pre id="history-payload-display" class="payload-display" style="height: 100%"></pre>
+                    <div id="history-payload-monaco-container" style="height: 100%; width: 100%;"></div>
                   </div>
                 </div>
               </div>
@@ -353,7 +362,16 @@ Select a topic to view its latest received payload.</pre>
                     </button>
                   </div>
                 </div>
-                <textarea id="pub-payload" rows="4"></textarea>
+                <div id="pub-monaco-container" style="height: 120px; border: 1px solid var(--vscode-input-border);"></div>
+              </div>
+
+              <div class="pub-field" style="margin-top: 12px;">
+                <div class="payload-label-row">
+                  <label>MQTT 5.0 User Properties</label>
+                  <button type="button" id="btn-add-prop" class="mini-btn"><span class="codicon codicon-add"></span> Add Property</button>
+                </div>
+                <div id="pub-properties-container" style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+                </div>
               </div>
 
               <div class="pub-actions-row">
@@ -368,6 +386,46 @@ Select a topic to view its latest received payload.</pre>
 
 
 
+    <script nonce="{{nonce}}">
+      window.monacoReady = new Promise(function(resolve) {
+        require(["vs/editor/editor.main"], function () {
+          window.payloadMonacoEditor = monaco.editor.create(document.getElementById('payload-monaco-container'), {
+            value: "Select a topic to view its latest received payload.",
+            language: "text",
+            theme: "vs-dark",
+            readOnly: true,
+            minimap: { enabled: false },
+            automaticLayout: true,
+            scrollBeyondLastLine: false,
+            wordWrap: "on"
+          });
+
+          window.pubMonacoEditor = monaco.editor.create(document.getElementById('pub-monaco-container'), {
+            value: "",
+            language: "json",
+            theme: document.body.classList.contains('vscode-light') ? 'vs' : 'vs-dark',
+            minimap: { enabled: false },
+            automaticLayout: true,
+            scrollBeyondLastLine: false,
+            wordWrap: "on"
+          });
+
+          window.historyMonacoEditor = monaco.editor.create(document.getElementById('history-payload-monaco-container'), {
+            value: "Select a message to view its payload.",
+            language: "text",
+            theme: "vs-dark",
+            readOnly: true,
+            minimap: { enabled: false },
+            automaticLayout: true,
+            scrollBeyondLastLine: false,
+            wordWrap: "on"
+          });
+          
+          resolve(window.payloadMonacoEditor);
+        });
+      });
+    </script>
+    <div id="toast-container" class="toast-container"></div>
     <script nonce="{{nonce}}" src="{{scriptUri}}"></script>
   </body>
 </html>

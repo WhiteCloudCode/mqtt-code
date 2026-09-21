@@ -2,14 +2,19 @@ import { MqttMessage } from '../models/mqtt-message';
 import { SerialisedTopicNode } from '../models/topic-node';
 import * as echarts from 'echarts';
 
+import { WebviewToExtensionMessage } from '../types/webview-messages';
+
 interface VsCodeApi {
-  postMessage(message: unknown): void;
+  postMessage(message: WebviewToExtensionMessage): void;
   getState(): unknown;
   setState(state: unknown): void;
 }
 
 declare function acquireVsCodeApi(): VsCodeApi;
-export const vscode = acquireVsCodeApi();
+export const vscode =
+  typeof acquireVsCodeApi !== 'undefined'
+    ? acquireVsCodeApi()
+    : ({ postMessage: () => {}, getState: () => undefined, setState: () => {} } as VsCodeApi);
 
 // Global State
 export const state = {

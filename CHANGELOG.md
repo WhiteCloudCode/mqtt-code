@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-## [0.7.1] (2026-09-17
+## [1.0.0] (2026-09-18)
+- Major refactor and performance improvements.
+- Updated Live Topic Explorer with enhanced tabbed inspector view.
+- Now uses Monaco for consistent vscode editor experience.
+
+## [0.7.1] (2026-09-17)
 - Added screenshot to screengrab section in README.a
 
 ## [0.7.0] (2026-09-16)

@@ -79,4 +79,9 @@ flowchart TD
   - **Hybrid Node (Payload AND children)**: Shows all 4 tabs.
 
 ## Agent Workflow Rules
-- **Mandatory Verification**: After modifying any code, ALWAYS automatically run `npm run lint`, `npm run compile`, and `npm run test`. You must fix any resulting errors before completing your turn.
+- **Mandatory Verification**: 
+  1. **Pre-flight**: Before making changes, run `npm run lint`, `npm run compile`, and tests to establish a baseline.
+  2. **Local Broker**: For any changes affecting connection, publishing, or subscribing, spin up a local broker: `docker run -d --name mqtt-test-broker -p 1883:1883 -p 9001:9001 eclipse-mosquitto:latest`.
+  3. **Automated Suite**: After modifications, run `npm run lint`, `npm run compile`, and `npm run test`. You must fix any resulting errors.
+  4. **Live Verification**: Run test scripts against the local broker to verify functionality end-to-end.
+  5. **Teardown & Proof**: Provide terminal output proving the tests passed before concluding the turn, and run `docker stop mqtt-test-broker && docker rm mqtt-test-broker`.
