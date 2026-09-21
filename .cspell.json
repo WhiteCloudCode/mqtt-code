@@ -1,0 +1,41 @@
+{
+  "version": "0.2",
+  "language": "en-GB",
+  "dictionaries": [
+    "en-gb",
+    "softwareTerms",
+    "typescript",
+    "node",
+    "html",
+    "css"
+  ],
+  "words": [
+    "mosquitto",
+    "vsce",
+    "webview",
+    "esbuild",
+    "morphdom",
+    "mqtt",
+    "mqtts",
+    "twistie",
+    "twisties",
+    "keytar",
+    "curveness",
+    "whitecloudcode",
+    "screengrab",
+    "Conn",
+    "Reflows",
+    "reflow",
+    "nonexistent",
+    "outbase",
+    "hivemq"
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    "dist/**",
+    "out/**",
+    ".vscode-test/**",
+    "package-lock.json",
+    ".cspell.json"
+  ]
+}

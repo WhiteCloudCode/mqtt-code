@@ -218,8 +218,9 @@
     "test": "node ./dist/test/run-test.js",
     "test:ui": "mocha --ui tdd --require dist/test/suite/webview-setup.js dist/test/suite/webview-topic-tree.test.js",
     "test:unit": "mocha dist/test/suite/models.test.js dist/test/suite/topic-tree-manager.test.js",
-    "lint": "eslint src --ext ts",
+    "lint": "eslint src --ext ts && npm run spellcheck",
     "lint:fix": "eslint src --ext ts --fix",
+    "spellcheck": "cspell \"**/*.{ts,md,html,css,json,js}\"",
     "format": "prettier --write src",
     "format:check": "prettier --check src",
     "release:patch": "node scripts/check-changelog.js && commit-and-tag-version --skip.changelog --release-as patch && npx --yes @vscode/vsce package --allow-missing-repository",
@@ -234,6 +235,7 @@
     "mqtt": "^5.10.1"
   },
   "devDependencies": {
+    "@cspell/dict-en-gb": "^5.0.34",
     "@eslint/js": "^10.0.1",
     "@types/jsdom": "^30.0.0",
     "@types/mocha": "^10.0.10",
@@ -244,6 +246,7 @@
     "@typescript-eslint/parser": "^8.70.0",
     "@vscode/test-electron": "^3.1.0",
     "commit-and-tag-version": "^13.2.1",
+    "cspell": "^10.3.3",
     "esbuild": "^0.24.0",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
