@@ -10,12 +10,12 @@
     <link rel="stylesheet" href="{{styleUri}}" />
     <title>MQTT Code Explorer</title>
     <script nonce="{{nonce}}">
-      var require = { paths: { 'vs': '{{monacoBaseUri}}' } };
+      var require = { paths: { vs: '{{monacoBaseUri}}' } };
     </script>
     <script nonce="{{nonce}}" src="{{monacoLoaderUri}}"></script>
     <script nonce="{{nonce}}">
       require.config({
-        'vs/nls': { availableLanguages: { '*': '' } }
+        'vs/nls': { availableLanguages: { '*': '' } },
       });
     </script>
   </head>
@@ -214,8 +214,10 @@
                   </button>
                 </div>
                 <div class="payload-viewer-wrapper" style="flex: 1">
-                  <div id="payload-monaco-container" style="height: 100%; width: 100%;"></div>
-                  <div id="payload-display-fallback" style="display: none;">Select a topic to view its latest received payload.</div>
+                  <div id="payload-monaco-container" style="height: 100%; width: 100%"></div>
+                  <div id="payload-display-fallback" style="display: none">
+                    Select a topic to view its latest received payload.
+                  </div>
                 </div>
               </div>
             </div>
@@ -245,9 +247,16 @@
               </div>
             </div>
 
-            <div class="tab-content" id="tab-history" role="tabpanel" style="padding: 0;">
-              <div id="history-split-container" style="display: flex; flex-direction: column; height: 100%;">
-                <div class="history-list-wrapper" id="history-master-view" style="flex: 1; overflow-y: auto; padding: 10px 16px;">
+            <div class="tab-content" id="tab-history" role="tabpanel" style="padding: 0">
+              <div
+                id="history-split-container"
+                style="display: flex; flex-direction: column; height: 100%"
+              >
+                <div
+                  class="history-list-wrapper"
+                  id="history-master-view"
+                  style="flex: 1; overflow-y: auto; padding: 10px 16px"
+                >
                   <table class="history-table">
                     <thead>
                       <tr>
@@ -269,13 +278,38 @@
                 </div>
 
                 <!-- Detail View (Hidden by default) -->
-                <div id="history-detail-view" style="display: none; flex: 1; flex-direction: column; border-top: 1px solid var(--vscode-panel-border, #333); padding: 10px 16px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <h4 id="history-detail-title" style="margin: 0; font-size: 13px; font-weight: 600;">Message Properties</h4>
+                <div
+                  id="history-detail-view"
+                  style="
+                    display: none;
+                    flex: 1;
+                    flex-direction: column;
+                    border-top: 1px solid var(--vscode-panel-border, #333);
+                    padding: 10px 16px;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-bottom: 8px;
+                    "
+                  >
+                    <h4
+                      id="history-detail-title"
+                      style="margin: 0; font-size: 13px; font-weight: 600"
+                    >
+                      Message Properties
+                    </h4>
                     <button id="btn-close-history-detail" class="mini-btn">Close Details</button>
                   </div>
-                  
-                  <div id="history-detail-metadata" class="metadata-bar" style="margin-top: 0; margin-bottom: 8px; padding: 8px;">
+
+                  <div
+                    id="history-detail-metadata"
+                    class="metadata-bar"
+                    style="margin-top: 0; margin-bottom: 8px; padding: 8px"
+                  >
                     <div class="meta-item">
                       <span class="meta-label">Topic:</span>
                       <span id="history-meta-topic" class="meta-val">-</span>
@@ -294,10 +328,13 @@
                     </div>
                   </div>
 
-                  <div id="history-detail-user-properties" class="user-properties-container" style="display: none; margin-bottom: 8px; font-size: 11px">
-                  </div>
-                  
-                  <div class="payload-controls" style="margin-bottom: 4px;">
+                  <div
+                    id="history-detail-user-properties"
+                    class="user-properties-container"
+                    style="display: none; margin-bottom: 8px; font-size: 11px"
+                  ></div>
+
+                  <div class="payload-controls" style="margin-bottom: 4px">
                     <div class="format-toggles" id="history-format-toggles">
                       <button class="format-btn active" data-format="auto">Auto / JSON</button>
                       <button class="format-btn" data-format="text">Plain Text</button>
@@ -305,9 +342,12 @@
                       <button class="format-btn" data-format="base64">Base64</button>
                     </div>
                   </div>
-                  
-                  <div class="payload-viewer-wrapper" style="flex: 1; margin-top: 0;">
-                    <div id="history-payload-monaco-container" style="height: 100%; width: 100%;"></div>
+
+                  <div class="payload-viewer-wrapper" style="flex: 1; margin-top: 0">
+                    <div
+                      id="history-payload-monaco-container"
+                      style="height: 100%; width: 100%"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -362,16 +402,23 @@
                     </button>
                   </div>
                 </div>
-                <div id="pub-monaco-container" style="height: 120px; border: 1px solid var(--vscode-input-border);"></div>
+                <div
+                  id="pub-monaco-container"
+                  style="height: 120px; border: 1px solid var(--vscode-input-border)"
+                ></div>
               </div>
 
-              <div class="pub-field" style="margin-top: 12px;">
+              <div class="pub-field" style="margin-top: 12px">
                 <div class="payload-label-row">
                   <label>MQTT 5.0 User Properties</label>
-                  <button type="button" id="btn-add-prop" class="mini-btn"><span class="codicon codicon-add"></span> Add Property</button>
+                  <button type="button" id="btn-add-prop" class="mini-btn">
+                    <span class="codicon codicon-add"></span> Add Property
+                  </button>
                 </div>
-                <div id="pub-properties-container" style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
-                </div>
+                <div
+                  id="pub-properties-container"
+                  style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px"
+                ></div>
               </div>
 
               <div class="pub-actions-row">
@@ -384,43 +431,50 @@
       </main>
     </div>
 
-
-
     <script nonce="{{nonce}}">
-      window.monacoReady = new Promise(function(resolve) {
-        require(["vs/editor/editor.main"], function () {
-          window.payloadMonacoEditor = monaco.editor.create(document.getElementById('payload-monaco-container'), {
-            value: "Select a topic to view its latest received payload.",
-            language: "text",
-            theme: "vs-dark",
-            readOnly: true,
-            minimap: { enabled: false },
-            automaticLayout: true,
-            scrollBeyondLastLine: false,
-            wordWrap: "on"
-          });
+      window.monacoReady = new Promise(function (resolve) {
+        require(['vs/editor/editor.main'], function () {
+          window.payloadMonacoEditor = monaco.editor.create(
+            document.getElementById('payload-monaco-container'),
+            {
+              value: 'Select a topic to view its latest received payload.',
+              language: 'text',
+              theme: 'vs-dark',
+              readOnly: true,
+              minimap: { enabled: false },
+              automaticLayout: true,
+              scrollBeyondLastLine: false,
+              wordWrap: 'on',
+            }
+          );
 
-          window.pubMonacoEditor = monaco.editor.create(document.getElementById('pub-monaco-container'), {
-            value: "",
-            language: "json",
-            theme: document.body.classList.contains('vscode-light') ? 'vs' : 'vs-dark',
-            minimap: { enabled: false },
-            automaticLayout: true,
-            scrollBeyondLastLine: false,
-            wordWrap: "on"
-          });
+          window.pubMonacoEditor = monaco.editor.create(
+            document.getElementById('pub-monaco-container'),
+            {
+              value: '',
+              language: 'json',
+              theme: document.body.classList.contains('vscode-light') ? 'vs' : 'vs-dark',
+              minimap: { enabled: false },
+              automaticLayout: true,
+              scrollBeyondLastLine: false,
+              wordWrap: 'on',
+            }
+          );
 
-          window.historyMonacoEditor = monaco.editor.create(document.getElementById('history-payload-monaco-container'), {
-            value: "Select a message to view its payload.",
-            language: "text",
-            theme: "vs-dark",
-            readOnly: true,
-            minimap: { enabled: false },
-            automaticLayout: true,
-            scrollBeyondLastLine: false,
-            wordWrap: "on"
-          });
-          
+          window.historyMonacoEditor = monaco.editor.create(
+            document.getElementById('history-payload-monaco-container'),
+            {
+              value: 'Select a message to view its payload.',
+              language: 'text',
+              theme: 'vs-dark',
+              readOnly: true,
+              minimap: { enabled: false },
+              automaticLayout: true,
+              scrollBeyondLastLine: false,
+              wordWrap: 'on',
+            }
+          );
+
           resolve(window.payloadMonacoEditor);
         });
       });

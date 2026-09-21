@@ -260,11 +260,17 @@
     "typescript-eslint": "^8.70.0"
   },
   "lint-staged": {
-    "src/**/*.{ts,js,json,html,css}": [
-      "prettier --write"
+    "src/**/*.{js,json,html,css}": [
+      "prettier --write",
+      "cspell --no-must-find-files"
     ],
     "src/**/*.ts": [
-      "eslint --fix"
+      "eslint --fix",
+      "prettier --write",
+      "cspell --no-must-find-files"
+    ],
+    "*.md": [
+      "cspell --no-must-find-files"
     ]
   }
 }
