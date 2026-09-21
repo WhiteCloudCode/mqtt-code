@@ -333,9 +333,6 @@ body {
   color: var(--vscode-list-activeSelectionForeground, #ffffff);
 }
 
-.tree-node-row.flash-update {
-  animation: flashEffect 0.8s ease-out;
-}
 
 @keyframes flashEffect {
   0% {

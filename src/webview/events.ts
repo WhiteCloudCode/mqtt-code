@@ -1,5 +1,7 @@
 import { state, vscode } from './state';
 import {
+  topicTreeContainer,
+  topicListContainer,
   topicPane,
   paneResizer,
   btnViewTree,
@@ -232,8 +234,11 @@ function initCopyActions() {
       navigator.clipboard.writeText(text);
 
       target.classList.remove('flash-update');
-      void target.offsetWidth; // Trigger reflow
-      target.classList.add('flash-update');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          target.classList.add('flash-update');
+        });
+      });
     }
   });
 
@@ -317,6 +322,64 @@ function initPublishForm() {
 }
 
 export function initialiseEventListeners() {
+  topicTreeContainer.addEventListener('mousedown', (e) => {
+    const target = e.target as HTMLElement;
+
+    const twistie = target.closest('.tree-twistie');
+    if (twistie) {
+      e.stopPropagation();
+      const topic = twistie.getAttribute('data-twistie-topic');
+      const isCollapsed = twistie.getAttribute('data-twistie-collapsed') === 'true';
+      if (topic) {
+        state.userToggledNodes.set(topic, !isCollapsed);
+        renderTopics();
+      }
+      return;
+    }
+
+    const row = target.closest('.tree-node-row');
+    if (row) {
+      const topic = row.getAttribute('data-topic');
+      const hasChildren = row.getAttribute('data-has-children') === 'true';
+      const isCollapsed = row.getAttribute('data-is-collapsed') === 'true';
+
+      if (topic) {
+        state.selectedTopic = topic;
+        const pubTopicInput = document.getElementById('pub-topic') as HTMLInputElement;
+        if (pubTopicInput) {
+          pubTopicInput.value = topic;
+        }
+
+        if (hasChildren) {
+          state.userToggledNodes.set(topic, !isCollapsed);
+        }
+
+        updateSelectedTopicDetails();
+        renderTopics();
+        vscode.postMessage({ type: 'requestHistory', topic });
+      }
+    }
+  });
+
+  topicListContainer.addEventListener('mousedown', (e) => {
+    const target = e.target as HTMLElement;
+    const row = target.closest('.list-node-row');
+    if (row) {
+      const topic = row.getAttribute('data-topic');
+      if (topic) {
+        state.selectedTopic = topic;
+        const pubTopicInput = document.getElementById('pub-topic') as HTMLInputElement;
+        if (pubTopicInput) {
+          pubTopicInput.value = topic;
+        }
+
+        updateSelectedTopicDetails();
+        renderTopics();
+        vscode.postMessage({ type: 'requestHistory', topic });
+      }
+    }
+  });
+
   initTabs();
   initToolbar();
   initResizer();

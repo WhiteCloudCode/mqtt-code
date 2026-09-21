@@ -1,5 +1,12 @@
+
+// Mock acquireVsCodeApi before importing any webview code
+(global as any).acquireVsCodeApi = () => ({
+  postMessage: () => {},
+  getState: () => undefined,
+  setState: () => {}
+});
 import * as assert from 'assert';
-import { buildTreeDOM } from '../../webview/views/topic-tree';
+import { buildTreeHTML } from '../../webview/views/topic-tree';
 import { SerialisedTopicNode } from '../../models/topic-node';
 
 suite('Webview Topic Tree DOM', () => {
@@ -86,10 +93,12 @@ suite('Webview Topic Tree DOM', () => {
       },
     };
 
-    const dom = buildTreeDOM(rootNode, 'sys', 1);
-    assert.ok(dom, 'DOM should be built');
+    const html = buildTreeHTML(rootNode, 'sys', 1);
+    assert.ok(html, 'HTML should be built');
 
-    const label = dom?.querySelector('.tree-node-label');
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    const label = wrapper.querySelector('.tree-node-label');
     assert.strictEqual(label?.textContent, 'sys/devices/gateway/status');
   });
 });
