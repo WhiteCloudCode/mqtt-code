@@ -61,7 +61,7 @@ export function showHistoryDetail(msg: MqttMessage) {
 
     updatePayloadView(
       msg,
-      document.getElementById('history-payload-display') as HTMLElement,
+      document.getElementById('history-payload-monaco-container') as HTMLElement,
       state.historyFormat
     );
   }

@@ -23,6 +23,8 @@ import {
   pubQos,
   pubRetain,
   pubValidationMsg,
+  btnAddProp,
+  pubPropertiesContainer,
   btnFirehose,
   btnSankey,
   btnCloseHistoryDetail,
@@ -119,7 +121,7 @@ function initTabs() {
         if (state.currentHistoryMessage) {
           updatePayloadView(
             state.currentHistoryMessage,
-            document.getElementById('history-payload-display') as HTMLElement,
+            document.getElementById('history-payload-monaco-container') as HTMLElement,
             state.historyFormat
           );
         }
@@ -339,6 +341,41 @@ function initPublishForm() {
     }
   });
 
+  if (btnAddProp) {
+    btnAddProp.addEventListener('click', () => {
+      const row = document.createElement('div');
+      row.className = 'pub-prop-row';
+      row.style.display = 'flex';
+      row.style.gap = '8px';
+      row.style.marginBottom = '4px';
+
+      const keyInput = document.createElement('input');
+      keyInput.type = 'text';
+      keyInput.placeholder = 'Property Key';
+      keyInput.className = 'pub-prop-key flex-1';
+      keyInput.required = true;
+
+      const valInput = document.createElement('input');
+      valInput.type = 'text';
+      valInput.placeholder = 'Property Value';
+      valInput.className = 'pub-prop-val flex-2';
+      valInput.required = true;
+
+      const rmBtn = document.createElement('button');
+      rmBtn.type = 'button';
+      rmBtn.className = 'mini-btn';
+      rmBtn.innerHTML = '<span class="codicon codicon-trash"></span>';
+      rmBtn.addEventListener('click', () => {
+        pubPropertiesContainer.removeChild(row);
+      });
+
+      row.appendChild(keyInput);
+      row.appendChild(valInput);
+      row.appendChild(rmBtn);
+      pubPropertiesContainer.appendChild(row);
+    });
+  }
+
   publishForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const topic = pubTopic.value.trim();
@@ -347,6 +384,18 @@ function initPublishForm() {
       : '';
     const qos = Number.parseInt(pubQos.value, 10) as 0 | 1 | 2;
     const retain = pubRetain.checked;
+
+    const userProperties: Record<string, string> = {};
+    if (pubPropertiesContainer) {
+      const rows = pubPropertiesContainer.querySelectorAll('.pub-prop-row');
+      rows.forEach((row) => {
+        const k = (row.querySelector('.pub-prop-key') as HTMLInputElement).value.trim();
+        const v = (row.querySelector('.pub-prop-val') as HTMLInputElement).value.trim();
+        if (k) {
+          userProperties[k] = v;
+        }
+      });
+    }
 
     if (!topic) {
       pubValidationMsg.textContent = 'Topic is required.';
@@ -361,6 +410,7 @@ function initPublishForm() {
         payload,
         qos,
         retain,
+        userProperties: Object.keys(userProperties).length > 0 ? userProperties : undefined,
       },
     });
   });

@@ -200,6 +200,22 @@ export function updatePayloadView(
       } else {
         setTextContentIfChanged(displayElement, text);
       }
+    } else if (displayElement.id === 'history-payload-monaco-container') {
+      const win = window as unknown as {
+        historyMonacoEditor?: { setValue(v: string): void; updateOptions(o: unknown): void };
+        monacoReady?: Promise<unknown>;
+      };
+      if (win.historyMonacoEditor) {
+        win.historyMonacoEditor.setValue(text);
+        win.historyMonacoEditor.updateOptions({ language: isJson ? 'json' : 'text' });
+      } else if (win.monacoReady) {
+        win.monacoReady.then(() => {
+          if (win.historyMonacoEditor) {
+            win.historyMonacoEditor.setValue(text);
+            win.historyMonacoEditor.updateOptions({ language: isJson ? 'json' : 'text' });
+          }
+        });
+      }
     } else {
       if (isJson) {
         displayElement.innerHTML = syntaxHighlightJson(text);

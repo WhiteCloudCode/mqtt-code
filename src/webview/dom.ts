@@ -147,6 +147,10 @@ export const pubTopic = document.getElementById('pub-topic') as HTMLInputElement
 export const pubQos = document.getElementById('pub-qos') as HTMLSelectElement;
 export const pubRetain = document.getElementById('pub-retain') as HTMLInputElement;
 // pubPayload replaced by pub-monaco-container in HTML
+export const btnAddProp = document.getElementById('btn-add-prop') as HTMLButtonElement;
+export const pubPropertiesContainer = document.getElementById(
+  'pub-properties-container'
+) as HTMLElement;
 export const btnFormatJson = document.getElementById('btn-format-json') as HTMLButtonElement;
 export const btnSampleJson = document.getElementById('btn-sample-json') as HTMLButtonElement;
 export const pubValidationMsg = document.getElementById('pub-validation-message') as HTMLElement;

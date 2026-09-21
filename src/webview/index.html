@@ -307,7 +307,7 @@
                   </div>
                   
                   <div class="payload-viewer-wrapper" style="flex: 1; margin-top: 0;">
-                    <pre id="history-payload-display" class="payload-display" style="height: 100%"></pre>
+                    <div id="history-payload-monaco-container" style="height: 100%; width: 100%;"></div>
                   </div>
                 </div>
               </div>
@@ -365,6 +365,15 @@
                 <div id="pub-monaco-container" style="height: 120px; border: 1px solid var(--vscode-input-border);"></div>
               </div>
 
+              <div class="pub-field" style="margin-top: 12px;">
+                <div class="payload-label-row">
+                  <label>MQTT 5.0 User Properties</label>
+                  <button type="button" id="btn-add-prop" class="mini-btn"><span class="codicon codicon-add"></span> Add Property</button>
+                </div>
+                <div id="pub-properties-container" style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+                </div>
+              </div>
+
               <div class="pub-actions-row">
                 <span id="pub-validation-message" class="validation-message"></span>
                 <button type="submit" id="btn-publish" class="btn-primary">Publish Message</button>
@@ -395,6 +404,17 @@
             value: "",
             language: "json",
             theme: document.body.classList.contains('vscode-light') ? 'vs' : 'vs-dark',
+            minimap: { enabled: false },
+            automaticLayout: true,
+            scrollBeyondLastLine: false,
+            wordWrap: "on"
+          });
+
+          window.historyMonacoEditor = monaco.editor.create(document.getElementById('history-payload-monaco-container'), {
+            value: "Select a message to view its payload.",
+            language: "text",
+            theme: "vs-dark",
+            readOnly: true,
             minimap: { enabled: false },
             automaticLayout: true,
             scrollBeyondLastLine: false,

@@ -44,8 +44,14 @@ export function activate(context: vscode.ExtensionContext) {
   statusBarItem.show();
   context.subscriptions.push(statusBarItem);
 
+  let statusBarDebounceTimer: NodeJS.Timeout | undefined;
   connectionManager.on('statusChange', () => {
-    updateStatusBar(statusBarItem, connectionManager);
+    if (statusBarDebounceTimer) {
+      clearTimeout(statusBarDebounceTimer);
+    }
+    statusBarDebounceTimer = setTimeout(() => {
+      updateStatusBar(statusBarItem, connectionManager);
+    }, 100);
   });
 
   // Register Commands

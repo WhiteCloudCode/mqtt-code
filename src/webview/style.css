@@ -918,7 +918,6 @@ textarea:focus-visible,
 /* Toast Notifications */
 .toast-container {
   position: fixed;
-  bottom: 20px;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
@@ -949,13 +948,11 @@ textarea:focus-visible,
 }
 
 @keyframes toastFadeIn {
-  from { opacity: 0; transform: translateY(10px); }
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes toastFadeOut {
   from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(10px); }
   to { opacity: 0; transform: translateY(-10px); }
 }
