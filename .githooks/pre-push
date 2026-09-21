@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+# Ensure node/npx is in PATH for GUI clients like VS Code
+PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+
+# Load NVM if it exists
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+  . "$HOME/.nvm/nvm.sh"
+fi
+
+echo "🛡️  Running security audit before pushing..."
+npm audit --audit-level=high
+
+echo "✅ Security audit passed."
+

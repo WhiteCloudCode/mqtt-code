@@ -42,12 +42,12 @@ export function updateSelectedTopicDetails() {
     topicMetadataBar.style.display = 'none';
     btnCopyTopic.style.display = 'none';
     btnCopyPayload.style.display = 'none';
-    updatePayloadView(undefined);
+    updatePayloadView();
     tabBtnPayload.style.display = 'inline-block';
     tabBtnTraffic.style.display = 'none';
     tabBtnHistory.style.display = 'inline-block';
     tabBtnProperties.style.display = 'inline-block';
-    if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'tab-traffic') {
+    if ((document.querySelector('.tab-btn.active') as HTMLElement)?.dataset.tab === 'tab-traffic') {
       activateTab('tab-payload');
     }
     return;
@@ -82,7 +82,7 @@ export function updateSelectedTopicDetails() {
     tabBtnProperties.style.display = 'inline-block';
     tabBtnTraffic.style.display = 'none';
 
-    if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'tab-traffic') {
+    if ((document.querySelector('.tab-btn.active') as HTMLElement)?.dataset.tab === 'tab-traffic') {
       activateTab('tab-payload');
     }
   } else if (!hasMessages && hasChildren) {
@@ -98,7 +98,9 @@ export function updateSelectedTopicDetails() {
       tabBtnHistory.style.display = 'inline-block';
     } else {
       tabBtnHistory.style.display = 'none';
-      if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') !== 'tab-traffic') {
+      if (
+        (document.querySelector('.tab-btn.active') as HTMLElement)?.dataset.tab !== 'tab-traffic'
+      ) {
         activateTab('tab-traffic');
       }
     }
@@ -150,7 +152,7 @@ export function updateSelectedTopicDetails() {
         : '0'
     );
     renderUserProperties();
-    updatePayloadView(undefined);
+    updatePayloadView();
   }
 
   if (hasChildren) {
@@ -167,61 +169,56 @@ export function updatePayloadView(
   const msg = message || (node ? node.lastMessage : undefined);
 
   const applyContent = (text: string, isJson: boolean = false) => {
-    // Check if this is the main payload display which we replaced with Monaco
+    const updateMonacoEditor = (
+      editorKey: 'payloadMonacoEditor' | 'historyMonacoEditor',
+      fallbackId?: string
+    ) => {
+      const win = window as unknown as {
+        payloadMonacoEditor?: { setValue(v: string): void; updateOptions(o: unknown): void };
+        historyMonacoEditor?: { setValue(v: string): void; updateOptions(o: unknown): void };
+        monacoReady?: Promise<{ setValue(v: string): void; updateOptions(o: unknown): void }>;
+      };
+
+      const setEditor = (editor: {
+        setValue(v: string): void;
+        updateOptions(o: unknown): void;
+      }) => {
+        if (!editor) {
+          return;
+        }
+        editor.setValue(text);
+        editor.updateOptions({ language: isJson ? 'json' : 'text' });
+        if (fallbackId) {
+          const fallback = document.getElementById(fallbackId);
+          if (fallback) {
+            fallback.style.display = 'none';
+          }
+        }
+      };
+
+      if (win[editorKey]) {
+        setEditor(win[editorKey]!);
+      } else if (win.monacoReady) {
+        win.monacoReady.then((e: { setValue(v: string): void; updateOptions(o: unknown): void }) =>
+          setEditor(editorKey === 'payloadMonacoEditor' ? e : win[editorKey]!)
+        );
+      } else if (editorKey === 'payloadMonacoEditor') {
+        setTextContentIfChanged(displayElement, text);
+      }
+    };
+
     if (
       displayElement.id === 'payload-display' ||
       displayElement.id === 'payload-monaco-container' ||
       !displayElement.id
     ) {
-      // Wait for Monaco to be ready if it's not yet
-      const win = window as unknown as {
-        payloadMonacoEditor?: { setValue(v: string): void; updateOptions(o: unknown): void };
-        monacoReady?: Promise<{ setValue(v: string): void; updateOptions(o: unknown): void }>;
-      };
-      if (win.payloadMonacoEditor) {
-        win.payloadMonacoEditor.setValue(text);
-        win.payloadMonacoEditor.updateOptions({ language: isJson ? 'json' : 'text' });
-        // hide fallback
-        const fallback = document.getElementById('payload-display-fallback');
-        if (fallback) {
-          fallback.style.display = 'none';
-        }
-      } else if (win.monacoReady) {
-        win.monacoReady.then(
-          (editor: { setValue(v: string): void; updateOptions(o: unknown): void }) => {
-            editor.setValue(text);
-            editor.updateOptions({ language: isJson ? 'json' : 'text' });
-            const fallback = document.getElementById('payload-display-fallback');
-            if (fallback) {
-              fallback.style.display = 'none';
-            }
-          }
-        );
-      } else {
-        setTextContentIfChanged(displayElement, text);
-      }
+      updateMonacoEditor('payloadMonacoEditor', 'payload-display-fallback');
     } else if (displayElement.id === 'history-payload-monaco-container') {
-      const win = window as unknown as {
-        historyMonacoEditor?: { setValue(v: string): void; updateOptions(o: unknown): void };
-        monacoReady?: Promise<unknown>;
-      };
-      if (win.historyMonacoEditor) {
-        win.historyMonacoEditor.setValue(text);
-        win.historyMonacoEditor.updateOptions({ language: isJson ? 'json' : 'text' });
-      } else if (win.monacoReady) {
-        win.monacoReady.then(() => {
-          if (win.historyMonacoEditor) {
-            win.historyMonacoEditor.setValue(text);
-            win.historyMonacoEditor.updateOptions({ language: isJson ? 'json' : 'text' });
-          }
-        });
-      }
+      updateMonacoEditor('historyMonacoEditor');
+    } else if (isJson) {
+      displayElement.innerHTML = syntaxHighlightJson(text);
     } else {
-      if (isJson) {
-        displayElement.innerHTML = syntaxHighlightJson(text);
-      } else {
-        setTextContentIfChanged(displayElement, text);
-      }
+      setTextContentIfChanged(displayElement, text);
     }
   };
 
@@ -305,7 +302,7 @@ export function renderHistoryTable() {
 
   historyTableBody.querySelectorAll('tr[data-index]').forEach((tr) => {
     tr.addEventListener('mousedown', (e) => {
-      const idx = parseInt((e.currentTarget as HTMLElement).dataset.index || '0', 10);
+      const idx = Number.parseInt((e.currentTarget as HTMLElement).dataset.index || '0', 10);
       const msg = state.currentHistory[idx];
       if (msg) {
         showHistoryDetail(msg);

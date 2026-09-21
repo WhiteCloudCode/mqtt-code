@@ -752,9 +752,12 @@ details[open] .publisher-header::before {
   cursor: pointer;
 }
 
-.pub-field label {
+.pub-field label,
+.pub-field .pub-label {
   font-size: 11px;
   font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
   color: var(--vscode-foreground);
 }
 
@@ -873,97 +876,6 @@ textarea:focus-visible,
   justify-content: center;
 }
 
-/* Codicon SVG Fallbacks for Webview without bundled font */
-.codicon {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-color: currentColor;
-  vertical-align: middle;
-}
-.codicon::before {
-  content: '' !important;
-}
-.codicon-copy {
-  -webkit-mask: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 4l1-1h5.414L14 6.586V14l-1 1H5l-1-1V4z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3Cpath d='M5 4.5h5V7h2.5v6.5h-7.5v-9zM3 12H2V2.5L2.5 2h7V3H3v9z'/%3E%3C/svg%3E")
-    no-repeat 50% 50%;
-  mask: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 4l1-1h5.414L14 6.586V14l-1 1H5l-1-1V4z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3Cpath d='M5 4.5h5V7h2.5v6.5h-7.5v-9zM3 12H2V2.5L2.5 2h7V3H3v9z'/%3E%3C/svg%3E")
-    no-repeat 50% 50%;
-}
-.codicon-clear-all {
-  -webkit-mask: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M10 3h3v1h-1v9l-1 1H4l-1-1V4H2V3h3V2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1zM9 2H6v1h3V2zM4 13h7V4H4v9zm2-8H5v7h1V5zm1 0h1v7H7V5zm2 0h1v7H9V5z'/%3E%3C/svg%3E")
-    no-repeat 50% 50%;
-  mask: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M10 3h3v1h-1v9l-1 1H4l-1-1V4H2V3h3V2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1zM9 2H6v1h3V2zM4 13h7V4H4v9zm2-8H5v7h1V5zm1 0h1v7H7V5zm2 0h1v7H9V5z'/%3E%3C/svg%3E")
-    no-repeat 50% 50%;
-}
-.codicon-refresh {
-  -webkit-mask: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.681 3H2V2h3.5l.5.5V6H5V4a5 5 0 1 0 4.53-.761l.302-.953A6 6 0 1 1 4.681 3z'/%3E%3C/svg%3E")
-    no-repeat 50% 50%;
-  mask: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.681 3H2V2h3.5l.5.5V6H5V4a5 5 0 1 0 4.53-.761l.302-.953A6 6 0 1 1 4.681 3z'/%3E%3C/svg%3E")
-    no-repeat 50% 50%;
-}
-
-/* History Modal */
-.history-table tbody tr {
-  cursor: pointer;
-}
-
-.history-table tbody tr:hover {
-  background-color: var(--vscode-list-hoverBackground, #2a2d2e);
-}
-
-/* Toast Notifications */
-.toast-container {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-}
-
-.toast {
-  background-color: var(--vscode-notifications-background, #252526);
-  color: var(--vscode-notifications-foreground, #cccccc);
-  border: 1px solid var(--vscode-notifications-border, #303031);
-  padding: 8px 16px;
-  border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  animation:
-    toastFadeIn 0.3s ease-out,
-    toastFadeOut 0.5s ease-in 2s forwards;
-  pointer-events: auto;
-}
-
 .toast .codicon {
   color: var(--vscode-notificationsInfoIcon-foreground, #3794ff);
-}
-
-@keyframes toastFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes toastFadeOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
 }

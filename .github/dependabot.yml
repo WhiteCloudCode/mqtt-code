@@ -1,0 +1,8 @@
+version: 2
+updates:
+  - package-ecosystem: "npm" # Check for npm updates
+    directory: "/"           # Location of package manifests
+    schedule:
+      interval: "weekly"     # Check for updates once a week
+    open-pull-requests-limit: 10
+

@@ -107,6 +107,7 @@ export const paneResizer = document.getElementById('pane-resizer') as HTMLElemen
 
 export const btnViewTree = document.getElementById('btn-view-tree') as HTMLButtonElement;
 export const btnViewList = document.getElementById('btn-view-list') as HTMLButtonElement;
+export const treeActionBar = document.getElementById('tree-action-bar') as HTMLElement;
 export const btnExpandAll = document.getElementById('btn-expand-all') as HTMLButtonElement;
 export const btnCollapseAll = document.getElementById('btn-collapse-all') as HTMLButtonElement;
 

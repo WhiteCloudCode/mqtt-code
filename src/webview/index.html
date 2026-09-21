@@ -4,9 +4,10 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}' {{cspSource}} 'unsafe-eval'; worker-src blob: {{cspSource}}; img-src {{cspSource}} https: data:;"
+      content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}' {{cspSource}} 'unsafe-eval'; worker-src blob: {{cspSource}}; img-src {{cspSource}} https: data:; font-src {{cspSource}};"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{codiconsUri}}" />
     <link rel="stylesheet" href="{{styleUri}}" />
     <title>MQTT Code Explorer</title>
     <script nonce="{{nonce}}">
@@ -77,10 +78,10 @@
           </div>
           <div id="tree-action-bar" class="action-bar">
             <button id="btn-expand-all" class="action-icon-btn" title="Expand All">
-              [+] Expand All
+              <span class="codicon codicon-expand-all"></span> Expand All
             </button>
             <button id="btn-collapse-all" class="action-icon-btn" title="Collapse All">
-              [-] Collapse All
+              <span class="codicon codicon-collapse-all"></span> Collapse All
             </button>
           </div>
           <!-- Tree View Container -->
@@ -410,7 +411,7 @@
 
               <div class="pub-field" style="margin-top: 12px">
                 <div class="payload-label-row">
-                  <label>MQTT 5.0 User Properties</label>
+                  <div class="pub-label">MQTT 5.0 User Properties</div>
                   <button type="button" id="btn-add-prop" class="mini-btn">
                     <span class="codicon codicon-add"></span> Add Property
                   </button>

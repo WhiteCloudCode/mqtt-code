@@ -7,6 +7,7 @@ import {
   paneResizer,
   btnViewTree,
   btnViewList,
+  treeActionBar,
   btnExpandAll,
   btnCollapseAll,
   topicSearchInput,
@@ -45,11 +46,13 @@ function switchViewMode(mode: 'tree' | 'list') {
     btnViewList.classList.remove('active');
     topicTreeContainer.style.display = 'block';
     topicListContainer.style.display = 'none';
+    treeActionBar.style.display = 'flex';
   } else {
     btnViewList.classList.add('active');
     btnViewTree.classList.remove('active');
     topicTreeContainer.style.display = 'none';
     topicListContainer.style.display = 'block';
+    treeActionBar.style.display = 'none';
   }
   renderTopics();
 }
