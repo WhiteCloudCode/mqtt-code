@@ -76,7 +76,6 @@ export class ExplorerPanel {
         localResourceRoots: [
           vscode.Uri.joinPath(extensionUri, 'dist'),
           vscode.Uri.joinPath(extensionUri, 'resources'),
-          vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode', 'codicons'),
         ],
       }
     );
@@ -308,13 +307,7 @@ export class ExplorerPanel {
     const styleUri = webview.asWebviewUri(stylePathOnDisk);
 
     const codiconsUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._extensionUri,
-        'node_modules',
-        '@vscode/codicons',
-        'dist',
-        'codicon.css'
-      )
+      vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'codicons', 'codicon.css')
     );
 
     const nonce = getNonce();

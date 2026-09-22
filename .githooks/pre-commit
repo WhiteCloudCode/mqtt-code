@@ -6,6 +6,7 @@ PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
 
 # Load NVM if it exists
 if [ -s "$HOME/.nvm/nvm.sh" ]; then
+  unset npm_config_prefix
   . "$HOME/.nvm/nvm.sh"
 fi
 

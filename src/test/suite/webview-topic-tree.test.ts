@@ -173,24 +173,20 @@ suite('Webview Topic Tree DOM', () => {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = html;
 
-    // The root node 'sys' should only compress up to 'devices' -> 'sys/devices'
-    // because 'gateway' has a payload and must become a selectable node.
+    // The root node 'sys' should compress up to 'gateway' -> 'sys/devices/gateway'
+    // because 'sys' and 'devices' have no payload.
     const rootLabel = wrapper.querySelector('.tree-node-label');
-    assert.strictEqual(rootLabel?.textContent, 'sys/devices');
+    assert.strictEqual(rootLabel?.textContent, 'sys/devices/gateway');
 
-    // First node is sys/devices. We look for 'gateway' inside it.
-    let foundGateway = false;
-    let foundStatus = false;
+    // Inside 'sys/devices/gateway', the child is 'status', which has 1 child 'f412fad4e6e4'.
+    // 'status' has no payload, so it should squash with 'f412fad4e6e4' into 'status/f412fad4e6e4'
+    let foundStatusSquashed = false;
     wrapper.querySelectorAll('.tree-node-label').forEach((el) => {
-      if (el.textContent === 'gateway') {
-        foundGateway = true;
-      }
-      if (el.textContent === 'status') {
-        foundStatus = true;
+      if (el.textContent === 'status/f412fad4e6e4') {
+        foundStatusSquashed = true;
       }
     });
 
-    assert.ok(foundGateway, 'Gateway should not be squashed into sys/devices');
-    assert.ok(foundStatus, 'Status should not be squashed into gateway');
+    assert.ok(foundStatusSquashed, 'Status should be squashed into status/f412fad4e6e4');
   });
 });

@@ -41,6 +41,13 @@ async function build() {
     fs.cpSync(path.join(__dirname, 'node_modules', 'monaco-editor', 'min', 'vs'), monacoDist, { recursive: true });
   }
 
+  // Copy Codicons
+  const codiconsDist = path.join(webviewDist, 'codicons');
+  if (!fs.existsSync(codiconsDist)) {
+    fs.mkdirSync(codiconsDist, { recursive: true });
+    fs.cpSync(path.join(__dirname, 'node_modules', '@vscode', 'codicons', 'dist'), codiconsDist, { recursive: true });
+  }
+
 
   // Extension Host build context
   const extensionContext = await esbuild.context({
