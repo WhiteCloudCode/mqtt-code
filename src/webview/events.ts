@@ -29,11 +29,11 @@ import {
   btnFirehose,
   btnSankey,
   btnCloseHistoryDetail,
-  historyDetailView,
-  historyMasterView,
+  activateTab,
 } from './dom';
 
 import { findNode } from './utils/tree-utils';
+import { hideHistoryDetail } from './components/history-detail';
 import { renderTopics } from './main';
 import { updatePayloadView, updateSelectedTopicDetails } from './components/payload-inspector';
 import { renderIntermediateNodeView } from './views/firehose';
@@ -80,20 +80,6 @@ function showToast(message: string) {
   }, 2600);
 }
 
-export function activateTab(tabId: string) {
-  const target = document.querySelector(`.tab-btn[data-tab="${tabId}"]`) as HTMLElement;
-  if (!target) {
-    return;
-  }
-
-  document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
-
-  target.classList.add('active');
-  const content = document.getElementById(tabId);
-  content?.classList.add('active');
-}
-
 function initTabs() {
   document.querySelectorAll('.tab-btn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
@@ -135,11 +121,9 @@ function initTabs() {
     });
   });
 
-  if (btnCloseHistoryDetail && historyDetailView && historyMasterView) {
+  if (btnCloseHistoryDetail) {
     btnCloseHistoryDetail.addEventListener('click', () => {
-      historyDetailView.style.display = 'none';
-      historyMasterView.style.display = 'block';
-      updateSelectedTopicDetails();
+      hideHistoryDetail();
     });
   }
 }
@@ -247,7 +231,7 @@ function initCopyActions() {
   const truncateText = (str: string, maxLength = 40) =>
     str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
 
-  document.addEventListener('mousedown', (e) => {
+  document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     if (target.classList.contains('topic-segment-badge')) {
       const text = target.textContent || '';
@@ -420,7 +404,7 @@ function initPublishForm() {
 }
 
 export function initialiseEventListeners() {
-  topicTreeContainer.addEventListener('mousedown', (e) => {
+  topicTreeContainer.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
 
     const twistie = target.closest('.tree-twistie');
@@ -443,10 +427,6 @@ export function initialiseEventListeners() {
 
       if (topic) {
         state.selectedTopic = topic;
-        const pubTopicInput = document.getElementById('pub-topic') as HTMLInputElement;
-        if (pubTopicInput) {
-          pubTopicInput.value = topic;
-        }
 
         if (hasChildren) {
           state.userToggledNodes.set(topic, !isCollapsed);
@@ -459,17 +439,13 @@ export function initialiseEventListeners() {
     }
   });
 
-  topicListContainer.addEventListener('mousedown', (e) => {
+  topicListContainer.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     const row = target.closest('.list-node-row');
     if (row) {
       const topic = row.getAttribute('data-topic');
       if (topic) {
         state.selectedTopic = topic;
-        const pubTopicInput = document.getElementById('pub-topic') as HTMLInputElement;
-        if (pubTopicInput) {
-          pubTopicInput.value = topic;
-        }
 
         updateSelectedTopicDetails();
         renderTopics();

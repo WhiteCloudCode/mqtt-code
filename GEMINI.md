@@ -69,6 +69,7 @@ flowchart TD
 - **Code Style**: Strictly typed TypeScript with modular single-purpose services.
 - **Credentials**: Zero plain-text storage for passwords and certificates.
 - **UI Event Handling**: Always use `mousedown` instead of `click` for interactive elements in rapidly updating views (e.g., Firehose, Topic Tree). This prevents missed clicks if the DOM re-renders between mouse press and release.
+- **UI Event Handling**: Use standard `click` events for interactive elements. Thanks to `morphdom` integration, elements are updated in-place and won't disappear during interactions, so `click` events will fire reliably even in rapidly updating views (e.g., Firehose, Topic Tree).
 - **Documentation**: Whenever a new feature is added, modified, or removed, you MUST update `FEATURES.md` to reflect the change so it remains a definitive and granular checklist of all functionality.
 
 

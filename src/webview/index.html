@@ -181,6 +181,17 @@
               </button>
               <button
                 class="tab-btn"
+                data-tab="tab-message-details"
+                id="tab-btn-message-details"
+                role="tab"
+                aria-selected="false"
+                aria-controls="tab-message-details"
+                style="display: none"
+              >
+                Message Details
+              </button>
+              <button
+                class="tab-btn"
                 data-tab="tab-properties"
                 id="tab-btn-properties"
                 role="tab"
@@ -277,16 +288,20 @@
                     </tbody>
                   </table>
                 </div>
+              </div>
+            </div>
 
+            <div class="tab-content" id="tab-message-details" role="tabpanel" style="padding: 0">
+              <div style="display: flex; flex-direction: column; height: 100%">
                 <!-- Detail View (Hidden by default) -->
                 <div
                   id="history-detail-view"
                   style="
-                    display: none;
+                    display: flex;
                     flex: 1;
                     flex-direction: column;
-                    border-top: 1px solid var(--vscode-panel-border, #333);
                     padding: 10px 16px;
+                    height: 100%;
                   "
                 >
                   <div

@@ -26,9 +26,9 @@ import {
   tabBtnTraffic,
   tabBtnHistory,
   tabBtnProperties,
+  activateTab,
 } from '../dom';
 
-import { activateTab } from '../events';
 import { renderIntermediateNodeView } from '../views/firehose';
 
 export function updateSelectedTopicDetails() {
@@ -91,8 +91,9 @@ export function updateSelectedTopicDetails() {
     tabBtnProperties.style.display = 'none';
     tabBtnTraffic.style.display = 'inline-block';
 
-    const historyDetailView = document.getElementById('history-detail-view');
-    const isHistoryDetailOpen = historyDetailView && historyDetailView.style.display !== 'none';
+    const tabBtnMessageDetails = document.getElementById('tab-btn-message-details');
+    const isHistoryDetailOpen =
+      tabBtnMessageDetails && tabBtnMessageDetails.style.display !== 'none';
 
     if (isHistoryDetailOpen) {
       tabBtnHistory.style.display = 'inline-block';

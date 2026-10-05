@@ -114,6 +114,10 @@ export const btnCollapseAll = document.getElementById('btn-collapse-all') as HTM
 export const tabBtnPayload = document.getElementById('tab-btn-payload') as HTMLButtonElement;
 export const tabBtnTraffic = document.getElementById('tab-btn-traffic') as HTMLButtonElement;
 export const tabBtnHistory = document.getElementById('tab-btn-history') as HTMLButtonElement;
+export const tabBtnMessageDetails = document.getElementById(
+  'tab-btn-message-details'
+) as HTMLButtonElement;
+
 export const tabBtnProperties = document.getElementById('tab-btn-properties') as HTMLButtonElement;
 
 export const selectedTopicTitle = document.getElementById('selected-topic-title') as HTMLElement;
@@ -162,3 +166,17 @@ export const btnCloseHistoryDetail = document.getElementById(
   'btn-close-history-detail'
 ) as HTMLButtonElement;
 export const toastContainer = document.getElementById('toast-container') as HTMLDivElement;
+
+export function activateTab(tabId: string) {
+  const target = document.querySelector(`.tab-btn[data-tab="${tabId}"]`) as HTMLElement;
+  if (!target) {
+    return;
+  }
+
+  document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
+
+  target.classList.add('active');
+  const content = document.getElementById(tabId);
+  content?.classList.add('active');
+}

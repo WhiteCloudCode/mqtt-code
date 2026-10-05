@@ -1,8 +1,7 @@
 import { MqttMessage } from '../../models/mqtt-message';
 import { state } from '../state';
 import { updatePayloadView } from './payload-inspector';
-import { formatBytes, escapeHtml, renderSelectableTopic } from '../dom';
-import { activateTab } from '../events';
+import { formatBytes, escapeHtml, renderSelectableTopic, activateTab } from '../dom';
 
 function setElText(id: string, text: string) {
   const el = document.getElementById(id);
@@ -27,14 +26,11 @@ export function showHistoryDetail(msg: MqttMessage) {
     return;
   }
 
-  const tabBtnHistory = document.getElementById('tab-btn-history');
-  if (tabBtnHistory) {
-    tabBtnHistory.style.display = 'inline-block';
-    tabBtnHistory.textContent = 'Message Details';
+  const tabBtnMessageDetails = document.getElementById('tab-btn-message-details');
+  if (tabBtnMessageDetails) {
+    tabBtnMessageDetails.style.display = 'inline-block';
   }
-  activateTab('tab-history');
-  masterView.style.display = 'none';
-  detailView.style.display = 'flex';
+  activateTab('tab-message-details');
 
   setElText(
     'history-detail-title',
@@ -72,15 +68,15 @@ export function showHistoryDetail(msg: MqttMessage) {
 }
 
 export function hideHistoryDetail() {
-  const detailView = document.getElementById('history-detail-view');
-  const masterView = document.getElementById('history-master-view');
-  if (detailView && masterView) {
-    detailView.style.display = 'none';
-    masterView.style.display = 'block';
+  const tabBtnMessageDetails = document.getElementById('tab-btn-message-details');
+  if (tabBtnMessageDetails) {
+    tabBtnMessageDetails.style.display = 'none';
+  }
 
-    const tabBtnHistory = document.getElementById('tab-btn-history');
-    if (tabBtnHistory) {
-      tabBtnHistory.textContent = 'Message History';
-    }
+  if (
+    (document.querySelector('.tab-btn.active') as HTMLElement)?.dataset.tab ===
+    'tab-message-details'
+  ) {
+    activateTab('tab-history');
   }
 }
